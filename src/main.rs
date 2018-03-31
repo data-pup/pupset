@@ -18,22 +18,26 @@ fn print_args(args: &Vec<String>) {
     }
 }
 
-fn print_stdin_contents() {
+fn print_stdin_contents() -> Result<(), io::Error> {
     let stdin = io::stdin();
-    let mut buf = String::new();
-    let mut handle = stdin.lock();
-    match handle.read_line(&mut buf) {
-        Ok(n) => {
-            println!("{} bytes read", n);
-            println!("{}", buf);
-        },
-        Err(error) => println!("Error: {}", error),
+    let handle = stdin.lock();
+    for line_result in handle.lines() {
+        match line_result {
+            Ok(line) => println!("{}", line),
+            Err(err) => {
+                return Err(err);
+            },
+        }
     }
+    Ok(())
 }
 
 fn main() {
     let args = collect_args();
     print_args(&args);
     println!("Reading stdin:");
-    print_stdin_contents();
+    print_stdin_contents().unwrap_or_else(|err| {
+        eprintln!("Error reading input: {}", err);
+        std::process::exit(1);
+    });
 }

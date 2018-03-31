@@ -37,4 +37,38 @@ to read input, which will involve learning more about the `std::io` crate.
 
 ### Reading standard input
 
-...
+In order to read from stdin, we will need to use the `std::io::stdin()` method
+in order to obtain a handle to the process's standard input. Then, we lock it,
+as access to this buffer is synchronized via a mutex. We must also import the
+`BufRead` trait, in order to use the `read_line` method. The resulting code
+looks like this:
+
+```rust
+use std::io;
+use std::io::BufRead;
+
+fn print_stdin_contents() {
+    let stdin = io::stdin();
+    let handle = stdin.lock();
+    for line in handle.lines() {
+        match line {
+            Ok(text) => println!("{}", text),
+            Err(e) => {
+                println!("Error {}", e);
+                return;
+            },
+        };
+    }
+}
+
+fn main() {
+    print_stdin_contents().unwrap_or_else(|err| {
+        eprintln!("Error reading input: {}", err);
+        std::process::exit(1);
+    });
+}
+```
+
+This is a basic example of reading standard input, and we will work on this
+further as we progress. Eventually, it would be nice to specify input files,
+output files, but we will focus on some basic commands first.
