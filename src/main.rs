@@ -1,3 +1,5 @@
+use std::io;
+use std::io::BufRead;
 use std::env;
 
 fn collect_args() -> Vec<String> {
@@ -16,7 +18,22 @@ fn print_args(args: &Vec<String>) {
     }
 }
 
+fn print_stdin_contents() {
+    let stdin = io::stdin();
+    let mut buf = String::new();
+    let mut handle = stdin.lock();
+    match handle.read_line(&mut buf) {
+        Ok(n) => {
+            println!("{} bytes read", n);
+            println!("{}", buf);
+        },
+        Err(error) => println!("Error: {}", error),
+    }
+}
+
 fn main() {
     let args = collect_args();
     print_args(&args);
+    println!("Reading stdin:");
+    print_stdin_contents();
 }
