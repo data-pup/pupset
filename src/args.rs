@@ -1,6 +1,6 @@
 /// Collect the arguments given to the program.
 pub fn collect_args() -> Vec<String> {
-    let args = std::env::args()
+    let args = ::std::env::args()
         .skip(1)
         .collect();
     args
