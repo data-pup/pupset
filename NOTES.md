@@ -72,3 +72,49 @@ fn main() {
 This is a basic example of reading standard input, and we will work on this
 further as we progress. Eventually, it would be nice to specify input files,
 output files, but we will focus on some basic commands first.
+
+### Refactoring
+
+Next I cleaned up the function that prints the lines from stdin. This was a
+nice chance to use to `?` operator.
+
+```rust
+for line_result in handle.lines() {
+    let line = line_result?;
+    println!("{}", line);
+}
+```
+
+At this point, the function would do something like this when I ran it:
+
+```sh
+✨  cargo run hello world
+    Finished dev [unoptimized + debuginfo] target(s) in 0.0 secs
+     Running `target/debug/pupset hello world`
+Received Arguments:
+[0] : hello
+[1] : world
+Reading stdin:
+foo                     // <- input
+foo                     // <- output
+bar
+bar
+```
+
+This is a decent scaffold, and from here I can move into some further steps
+on this project. Right now, the main priorities are:
+*  Move the argv logic into a new module.
+*  Add some logic to parse the arguments into commands.
+*  Add some simple tests.
+*  Add traits and classes for commands, start with a line numbering command.
+
+## Option parsing
+
+The next step will be refactoring some of the argument parsing code. Eventually
+we will need to implement some different stream editing commands such as
+printing line numbers, search and replace, and so forth. Before we can do that
+however, we will need to first have a foundation for how we implement commands
+generically.
+
+This could be done using an option parsing crate, but we will try and implement
+this using the standard library alone, because learning things is fun.
