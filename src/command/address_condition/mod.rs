@@ -1,4 +1,5 @@
 pub mod line_number;
+pub mod line_range;
 
 pub type Address = u32;
 
