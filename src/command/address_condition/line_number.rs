@@ -22,17 +22,21 @@ impl AddressCondition for LineNumber {
 mod tests {
     use command::address_condition::line_number::*;
 
-    #[test]
-    fn line_number_tests() {
-        let addresses: Vec<Address> =
-            (0..11).collect(); // Create a sequence [0, 1, ..., 10].
-        let test_conditions: Vec<LineNumber> =
-            vec![0, 5, 10]         // Create a condition for lines 0, 5, and 10.
+    struct TestCase {
+        addresses: Vec<Address>,
+        conditions: Vec<LineNumber>,
+        expected_results: Vec<Vec<bool>>,
+    }
+
+    /// Create a vector of LineNumber conditions for lines 0, 5, and 10.
+    fn init_test_objects() -> TestCase {
+        let addresses: Vec<Address> = (0..11).collect();
+        let conditions = vec![0, 5, 10]
             .iter()
             .map(|n: &Address| LineNumber::new(*n))
             .collect();
         let expected_results = vec![
-            //  [0,     5,     10] <- Condition results.
+            //  [0,     5,     10   ]  <- Expected condition results.
             vec![true,  false, false], // Line 0
             vec![false, false, false], // Line 1
             vec![false, false, false], // Line 2
@@ -45,17 +49,25 @@ mod tests {
             vec![false, false, false], // Line 9
             vec![false, false, true ], // Line 10
         ];
-        let condition_results: Vec<Vec<bool>> = addresses
-            .iter()
+        TestCase { addresses, conditions, expected_results }
+    }
+
+    #[test]
+    fn line_number_tests() {
+        let TestCase { addresses, conditions, expected_results } = init_test_objects();
+
+        let condition_results: Vec<Vec<bool>> =
+            addresses.iter()    // Iterate through the addresses.
             .map(|curr_addr: &Address| -> Vec<bool> {
-                test_conditions
-                    .iter()
+                conditions      // For each address, check which conditions
+                    .iter()     // apply to the current line number.
                     .map(|curr_cond: &LineNumber| -> bool {
                         curr_cond.applies(*curr_addr)
                     })
                     .collect()
             })
             .collect();
+
         let mut i: usize = 0;
         for expected in expected_results.iter() {
             let actual = &condition_results[i];
