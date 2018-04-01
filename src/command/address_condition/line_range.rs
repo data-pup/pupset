@@ -25,18 +25,18 @@ impl TwoAddressCondition for LineRange {
 }
 
 impl LineRange {
-    fn check_min(&self, current_line: Address) -> bool {
+    fn check_min(&self, addr: Address) -> bool {
         match self.min.is_inclusive {
-            true if  (self.min.val <= current_line) != true => return false,
-            false if (self.min.val < current_line)  != true => return false,
+            true if  (self.min.val <= addr) != true => return false,
+            false if (self.min.val < addr)  != true => return false,
             _ => { true }
         }
     }
 
-    fn check_max(&self, current_line: Address) -> bool {
+    fn check_max(&self, addr: Address) -> bool {
         match self.max.is_inclusive {
-            true if  (self.max.val >= current_line) != true => return false,
-            false if (self.max.val > current_line)  != true => return false,
+            true if  (self.max.val >= addr) != true => return false,
+            false if (self.max.val > addr)  != true => return false,
             _ => { true }
         }
     }
