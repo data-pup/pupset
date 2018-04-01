@@ -118,3 +118,19 @@ generically.
 
 This could be done using an option parsing crate, but we will try and implement
 this using the standard library alone, because learning things is fun.
+
+### Project Structure
+
+At this point I determined that it would be best to start thinking about the
+general shape of the code. The main runtime of the program itself should be
+kept in `main.rs`. This should be very sparse however, and mostly be kept to
+fetching arguments given to the program, and passing these to a `run` method
+in the `lib.rs` file.
+
+I decided to add a subdirectory named `command/`, which will end up storing
+structs, traits, and definitions for different commands. I decided this
+warranted its own subdirectory because commands will end up having address
+components, regex patterns, and other various logical components.
+
+Options regarding the program configuration itself should be considered
+separately. Files related to this will be placed in a `config/` directory.
