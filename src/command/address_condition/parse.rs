@@ -2,8 +2,14 @@ use command::address_condition::{
     Address
 };
 
-pub fn parse_arg(arg: String) -> Address {
-    0
+pub type AddressList = Vec<Address>;
+
+static LOWER_BOUNDS_CHARS: [char; 2] = ['[', '('];
+
+pub fn parse_arg(arg: String) -> Result<AddressList, String> {
+    arg.split(",");
+
+    unimplemented!();
 }
 
 #[cfg(test)]
@@ -12,6 +18,6 @@ mod parse_tests {
 
     #[test]
     fn it_works() {
-        assert_eq!(parse_arg(String::from("0")), 0);
+        assert_eq!(1, 1);
     }
 }
