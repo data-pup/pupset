@@ -1,5 +1,8 @@
-pub mod line_number;
-pub mod line_range;
+mod line_number;
+mod line_range;
+
+pub use self::line_number::LineNumber;
+pub use self::line_range::{LineRange, RangeBounds};
 
 pub type Address = u32;
 

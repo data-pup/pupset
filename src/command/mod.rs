@@ -1,7 +1,11 @@
 pub mod address_condition;
-use self::address_condition::AddressCondition;
-use self::address_condition::OneAddressCondition;
-use self::address_condition::line_number::LineNumber;
+use self::address_condition::{
+    // AddressCondition,
+    // OneAddressCondition,
+    LineNumber,
+    // LineRange,
+    // RangeBounds,
+};
 
 pub struct Command {
     cond: LineNumber,
