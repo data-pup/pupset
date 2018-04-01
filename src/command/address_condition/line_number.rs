@@ -1,6 +1,6 @@
 use command::address_condition::{
     Address,
-    AddressCondition,
+    Condition,
     OneAddressCondition,
 };
 
@@ -8,14 +8,14 @@ pub struct LineNumber {
     n: Address,
 }
 
+impl Condition for LineNumber {
+    fn applies(&self, current_line: Address) -> bool { self.n == current_line }
+}
+
 impl OneAddressCondition for LineNumber {
     fn new(addr: Address) -> Self {
         LineNumber { n:addr }
     }
-}
-
-impl AddressCondition for LineNumber {
-    fn applies(&self, current_line: Address) -> bool { self.n == current_line }
 }
 
 #[cfg(test)]
@@ -68,7 +68,7 @@ mod tests {
             })
             .collect();
 
-        let mut i: usize = 0;
+        let mut i: usize = 0; // Check the test results line by line.
         for expected in expected_results.iter() {
             let actual = &condition_results[i];
             assert_eq!(*expected, *actual, "Test failed at line: {}", i);

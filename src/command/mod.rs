@@ -2,6 +2,7 @@ pub mod address_condition;
 use self::address_condition::{
     Address,
     AddressCondition,
+    Condition,
     OneAddressCondition,
     LineNumber,
     // LineRange,

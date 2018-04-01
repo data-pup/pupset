@@ -6,14 +6,18 @@ pub use self::line_range::{LineRange, RangeBounds};
 
 pub type Address = u32;
 
-pub trait AddressCondition {
+pub trait Condition {
     fn applies(&self, current_line: Address) -> bool;
 }
 
-pub trait OneAddressCondition : AddressCondition {
+pub trait OneAddressCondition : Condition {
     fn new(addr: Address) -> Self;
 }
 
-pub trait TwoAddressCondition : AddressCondition {
+pub trait TwoAddressCondition : Condition {
     fn new(a: Address, b: Address) -> Self;
 }
+
+pub enum AddressCondition {OneAddressCondition, TwoAddressCondition}
+
+// pub fn parse_arg(arg: String) -> Ad

@@ -1,6 +1,6 @@
 use command::address_condition::{
     Address,
-    AddressCondition,
+    Condition,
     TwoAddressCondition,
 };
 
@@ -9,7 +9,7 @@ pub struct LineRange {
     max: RangeBounds
 }
 
-impl AddressCondition for LineRange {
+impl Condition for LineRange {
     fn applies(&self, current_line: Address) -> bool {
         self.check_min(current_line) && self.check_max(current_line)
     }
