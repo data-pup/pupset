@@ -1,3 +1,5 @@
+pub mod line_number;
+
 pub type Address = u32;
 
 pub trait AddressCondition {

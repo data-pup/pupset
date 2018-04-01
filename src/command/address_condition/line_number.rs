@@ -1,8 +1,7 @@
-use command::address_traits::{
+use command::address_condition::{
     Address,
     AddressCondition,
     OneAddressCondition,
-    // TwoAddressCondition,
 };
 
 pub struct LineNumber {

@@ -1,2 +1,1 @@
-pub mod address_conditions;
-pub mod address_traits;
+pub mod address_condition;
