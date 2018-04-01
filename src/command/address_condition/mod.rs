@@ -1,5 +1,6 @@
 mod line_number;
 mod line_range;
+mod parse;
 
 pub use self::line_number::LineNumber;
 pub use self::line_range::{LineRange, RangeBounds};
