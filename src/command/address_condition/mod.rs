@@ -10,10 +10,10 @@ pub trait AddressCondition {
     fn applies(&self, current_line: Address) -> bool;
 }
 
-pub trait OneAddressCondition {
+pub trait OneAddressCondition : AddressCondition {
     fn new(addr: Address) -> Self;
 }
 
-pub trait TwoAddressCondition {
+pub trait TwoAddressCondition : AddressCondition {
     fn new(a: Address, b: Address) -> Self;
 }

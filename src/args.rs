@@ -5,7 +5,7 @@ pub fn collect_args() -> Config {
     let args: Vec<String> = ::std::env::args()
         .skip(1)
         .collect();
-    Config{ argv:args }
+    Config::new(args)
 }
 
 /// Print the arguments given to the program.

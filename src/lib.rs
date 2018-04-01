@@ -2,7 +2,7 @@ use std::io::BufRead;
 use std::io::Error as IoError;
 
 /// Read input from stdin and print it to stdout.
-pub fn print_stdin_contents() -> Result<(), IoError> {
+pub fn run() -> Result<(), IoError> {
     let stdin = ::std::io::stdin();
     let handle = stdin.lock();
     println!("Reading stdin:");
