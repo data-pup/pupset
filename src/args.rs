@@ -1,16 +1,18 @@
+use config::Config;
+
 /// Collect the arguments given to the program.
-pub fn collect_args() -> Vec<String> {
-    let args = ::std::env::args()
+pub fn collect_args() -> Config {
+    let args: Vec<String> = ::std::env::args()
         .skip(1)
         .collect();
-    args
+    Config{ argv:args }
 }
 
 /// Print the arguments given to the program.
-pub fn print_args(args: &Vec<String>) {
+pub fn print_args(args: &Config) {
     println!("Received Arguments:");
     let mut i = 0;
-    for a in args.iter() {
+    for a in args.argv.iter() {
         println!("[{}] : {}", i, *a);
         i += 1;
     }
