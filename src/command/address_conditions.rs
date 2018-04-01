@@ -1,16 +1,9 @@
-type Address = u32;
-
-pub trait AddressCondition {
-    fn applies(&self, current_line: Address) -> bool;
-}
-
-pub trait OneAddressCondition {
-    fn new(addr: Address) -> Self;
-}
-
-pub trait TwoAddressCondition {
-    fn new(a: Address, b: Address) -> Self;
-}
+use command::address_traits::{
+    Address,
+    AddressCondition,
+    OneAddressCondition,
+    // TwoAddressCondition,
+};
 
 pub struct LineNumber {
     n: Address,
