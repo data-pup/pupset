@@ -1,4 +1,5 @@
 mod args;
+mod command;
 mod config;
 mod lib;
 
