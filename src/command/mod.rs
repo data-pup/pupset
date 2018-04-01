@@ -1,7 +1,6 @@
 pub mod address_condition;
 use self::address_condition::{
     Address,
-    AddressCondition,
     Condition,
     OneAddressCondition,
     LineNumber,
@@ -10,7 +9,7 @@ use self::address_condition::{
 };
 
 pub struct Command {
-    cond: Option<Box<AddressCondition>>,
+    cond: Option<Box<Condition>>,
 }
 
 impl Command {

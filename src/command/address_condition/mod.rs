@@ -17,7 +17,3 @@ pub trait OneAddressCondition : Condition {
 pub trait TwoAddressCondition : Condition {
     fn new(a: Address, b: Address) -> Self;
 }
-
-pub enum AddressCondition {OneAddressCondition, TwoAddressCondition}
-
-// pub fn parse_arg(arg: String) -> Ad
