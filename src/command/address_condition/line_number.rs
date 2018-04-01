@@ -17,3 +17,11 @@ impl OneAddressCondition for LineNumber {
 impl AddressCondition for LineNumber {
     fn applies(&self, current_line: Address) -> bool { self.n == current_line }
 }
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn it_works() {
+        assert_eq!(1, 1);
+    }
+}
