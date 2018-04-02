@@ -1,5 +1,5 @@
 use std::ops::Index;
-use std::str::Chars;
+use std::str::{Chars, FromStr};
 
 use command::address_condition::{
     Address
@@ -11,15 +11,13 @@ pub type AddressList = Vec<Address>;
 pub enum ParseError {
     ArgEmpty,
     MissingClosuresError,
-    InvalidLowerBounds,
-    InvalidUpperBounds,
     InvalidAddressNumber,
 }
 
-enum TokenCategory { Closure, AddressToken }
-struct ParseToken {
-    val: String,
-    cat: TokenCategory,
+struct ConditionTokens {
+    lower_enclosure: String,
+    addr_tokens:     Vec<String>,
+    upper_enclosure: String,
 }
 
 static LOWER_BOUNDS_CHARS: [&str; 2] = ["[", "("];
@@ -50,7 +48,7 @@ fn arg_ends_with_closure(arg: &String) -> bool {
         .fold(false, |acc, elem| acc || elem)
 }
 
-fn split_arg(arg: &String) -> Vec<ParseToken> {
+fn split_arg(arg: &String) -> ConditionTokens {
     let mut arg_clone: String = arg.clone();
     let mut body: Chars = arg_clone.chars();
     let lower_enclosure: String = body.next()
@@ -60,14 +58,18 @@ fn split_arg(arg: &String) -> Vec<ParseToken> {
     let upper_enclosure: String = body_chars.pop()
         .expect("Error identifying upper enclosure.")
         .to_string();
-
     let body_string: String = body_chars
         .into_iter()
         .collect::<String>();
-
-    let addresses: Vec<&str> = body_string.split("..").collect();
-
-    unimplemented!();
+    let addr_tokens: Vec<String> = body_string
+        .split(RANGE_DELIM)
+        .map(|raw_str| String::from_str(raw_str).unwrap()) // FIXUP
+        .collect();
+    return ConditionTokens {
+        lower_enclosure,
+        addr_tokens,
+        upper_enclosure,
+    };
 }
 
 #[cfg(test)]
