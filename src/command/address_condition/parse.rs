@@ -5,21 +5,25 @@ use command::address_condition::{
     Address
 };
 
+// Result type used to represent the results of the parsing process.
 pub type ParseResult = Result<AddressList, ArgParseError>;
 pub type AddressList = Vec<Address>;
 #[derive(Debug, PartialEq)]
 pub enum ArgParseError {
-    ArgEmpty,
-    MissingClosuresError,
-    InvalidAddressNumber,
+    ArgEmpty,              // Used if the argument is empty.
+    MissingClosuresError,  // Used if no bounds characters are used.
+    InvalidAddressNumber,  // Used if the input does not contain valid addresses.
 }
 
+// This is used by the splitting function, to represent the characters
+// identified as the upper/lower enclosures, and the individual addresses.
 struct ConditionTokens {
     lower_enclosure: String,
     addr_tokens:     Vec<String>,
     upper_enclosure: String,
 }
 
+// Static variables used to identify closures, and split addresses in a range.
 static LOWER_BOUNDS_CHARS: [&str; 2] = ["[", "("];
 static UPPER_BOUNDS_CHARS: [&str; 2] = ["]", ")"];
 static RANGE_DELIM:        &str      = "..";
