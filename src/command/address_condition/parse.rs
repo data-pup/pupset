@@ -13,6 +13,10 @@ pub enum ParseError {
     InvalidAddressNumber,
 }
 
+static LOWER_BOUNDS_CHARS: [&str; 2] = ["[", "("];
+static UPPER_BOUNDS_CHARS: [&str; 2] = ["]", ")"];
+static RANGE_DELIM:        &str      = "..";
+
 pub fn parse_arg(arg: &String) -> ParseResult {
     if arg.is_empty() { return Err(ParseError::ArgEmpty); }
     if !check_closures(&arg) {
@@ -20,9 +24,6 @@ pub fn parse_arg(arg: &String) -> ParseResult {
     }
     Ok(vec![])
 }
-
-static LOWER_BOUNDS_CHARS: [&str; 2] = ["[", "("];
-static UPPER_BOUNDS_CHARS: [&str; 2] = ["]", ")"];
 
 fn check_closures(arg: &String) -> bool {
     arg_starts_with_closure(&arg) && arg_ends_with_closure(&arg)
