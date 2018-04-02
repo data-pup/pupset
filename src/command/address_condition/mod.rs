@@ -4,6 +4,7 @@ mod parse;
 
 pub use self::line_number::LineNumber;
 pub use self::line_range::LineRange;
+pub use self::parse::parse_arg;
 
 pub type Address = u32;
 

@@ -1,11 +1,12 @@
 pub mod address_condition;
-pub mod parse;
+mod parse;
 
 use self::address_condition::{
     Address,
     Condition,
     OneAddressCondition,
     LineNumber,
+    parse_arg,
     // LineRange,
     // RangeBounds,
 };
