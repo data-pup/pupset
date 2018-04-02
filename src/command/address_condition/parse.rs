@@ -61,11 +61,9 @@ fn arg_ends_with_closure(arg: &String) -> bool {
 // Splits an argument string into separate tokens, or returns an error.
 fn split_arg(arg: &String) -> Result<ConditionTokens, ArgParseError> {
     let mut arg_chars: Chars = arg.chars();
-
     let lower_enclosure: String = get_lower_enclosure_token(&mut arg_chars)?;
     let mut body_chars: Vec<char> = arg_chars.collect();
     let upper_enclosure: String = get_upper_enclosure_token(&mut body_chars)?;
-    let body_string: String = body_chars.into_iter().collect::<String>();
     let body_tokens: Vec<String> = get_condition_body_tokens(body_string)?;
     return Ok(ConditionTokens {lower_enclosure, body_tokens, upper_enclosure});
 }
@@ -89,10 +87,11 @@ fn get_upper_enclosure_token(chars: &mut Vec<char>)
 }
 
 // Split the body of the address condition argument into address tokens.
-fn get_condition_body_tokens(body: String)
+fn get_condition_body_tokens(body_chars: Vec<char>)
     -> Result<Vec<String>, ArgParseError> {
+    let body_string: String = body_chars.into_iter().collect::<String>();
     let parse_results: Result<Vec<String>, _> =
-        body.split(RANGE_DELIM)
+        body_string.split(RANGE_DELIM)
         .map(|s: &str| String::from_str(s))
         .collect();
     match parse_results {
