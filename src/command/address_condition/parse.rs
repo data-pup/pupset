@@ -5,10 +5,10 @@ use command::address_condition::{
     Address
 };
 
-pub type ParseResult = Result<AddressList, ParseError>;
+pub type ParseResult = Result<AddressList, ArgParseError>;
 pub type AddressList = Vec<Address>;
 #[derive(Debug, PartialEq)]
-pub enum ParseError {
+pub enum ArgParseError {
     ArgEmpty,
     MissingClosuresError,
     InvalidAddressNumber,
@@ -25,9 +25,9 @@ static UPPER_BOUNDS_CHARS: [&str; 2] = ["]", ")"];
 static RANGE_DELIM:        &str      = "..";
 
 pub fn parse_arg(arg: &String) -> ParseResult {
-    if arg.is_empty() { return Err(ParseError::ArgEmpty); }
+    if arg.is_empty() { return Err(ArgParseError::ArgEmpty); }
     if !check_closures(&arg) {
-        return Err(ParseError::MissingClosuresError);
+        return Err(ArgParseError::MissingClosuresError);
     }
     Ok(vec![])
 }
@@ -79,7 +79,7 @@ mod parse_tests {
     #[test]
     fn empty_string_returns_err() {
         let actual_result:   ParseResult = parse_arg(&String::from(""));
-        let expected_result: ParseResult = Err(ParseError::ArgEmpty);
+        let expected_result: ParseResult = Err(ArgParseError::ArgEmpty);
         assert_eq!(actual_result, expected_result);
     }
 
