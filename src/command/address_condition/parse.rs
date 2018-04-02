@@ -99,4 +99,22 @@ mod cond_closures_tests {
         };
         test_cases.iter().for_each(|test| run_test(test));
     }
+
+    fn init_test_cases() -> Vec<ClosureTestCase> {
+        vec![
+            ClosureTestCase {
+                input_string:          String::from("[1]"),
+                expected_start_result: true,
+                expected_end_result:   true,
+                test_description:      "Single-digit, valid inclusive bounds.",
+            },
+        ]
+    }
+
+    struct ClosureTestCase {
+        input_string:          String,
+        expected_start_result: bool,
+        expected_end_result:   bool,
+        test_description:      &'static str,
+    }
 }
