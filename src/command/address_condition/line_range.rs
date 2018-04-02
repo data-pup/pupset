@@ -2,6 +2,7 @@ use command::address_condition::{
     Address,
     Condition,
     TwoAddressCondition,
+    RangeBounds,
 };
 
 pub struct LineRange {
@@ -41,9 +42,6 @@ impl LineRange {
         }
     }
 }
-
-#[derive(Clone)]
-pub struct RangeBounds { val: Address, is_inclusive: bool }
 
 #[cfg(test)]
 mod tests {

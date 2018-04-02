@@ -3,7 +3,7 @@ mod line_range;
 mod parse;
 
 pub use self::line_number::LineNumber;
-pub use self::line_range::{LineRange, RangeBounds};
+pub use self::line_range::LineRange;
 
 pub type Address = u32;
 
@@ -18,3 +18,6 @@ pub trait OneAddressCondition : Condition {
 pub trait TwoAddressCondition : Condition {
     fn new(a: Address, b: Address) -> Self;
 }
+
+#[derive(Clone)]
+pub struct RangeBounds { val: Address, is_inclusive: bool }
