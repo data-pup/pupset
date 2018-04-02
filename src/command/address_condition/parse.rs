@@ -42,7 +42,6 @@ mod cond_closures {
 #[cfg(test)]
 mod parse_tests {
     use command::address_condition::parse::*;
-    use command::address_condition::parse::cond_closures::*;
 
     #[test]
     fn empty_string_returns_err() {
@@ -50,6 +49,20 @@ mod parse_tests {
         let expected_result: ParseResult = Err(ParseError::ArgEmpty);
         assert_eq!(actual_result, expected_result);
     }
+
+
+    #[test]
+    fn parse_line_number() {
+        let arg = String::from("[10]");
+        let actual_result:   ParseResult = parse_arg(&arg);
+        let expected_result: ParseResult = Ok(vec![10]);
+        assert_eq!(actual_result, expected_result);
+    }
+}
+
+#[cfg(test)]
+mod cond_closures_tests {
+    use command::address_condition::parse::cond_closures::*;
 
     #[test]
     fn test_arg_starts_with_closure() {
@@ -63,7 +76,8 @@ mod parse_tests {
         let run_test = |test: &(String, bool)| {
             let &(ref arg, ref expected_result) = test;
             let actual_result = arg_starts_with_closure(arg);
-            assert_eq!(actual_result, *expected_result, "Test failed for input: '{}'", arg);
+            assert_eq!(actual_result, *expected_result,
+                "Test failed for input: '{}'", arg);
         };
         test_cases.iter().for_each(|test| run_test(test));
     }
@@ -80,16 +94,9 @@ mod parse_tests {
         let run_test = |test: &(String, bool)| {
             let &(ref arg, ref expected_result) = test;
             let actual_result = arg_ends_with_closure(arg);
-            assert_eq!(actual_result, *expected_result, "Test failed for input: '{}'", arg);
+            assert_eq!(actual_result, *expected_result,
+                "Test failed for input: '{}'", arg);
         };
         test_cases.iter().for_each(|test| run_test(test));
-    }
-
-    #[test]
-    fn parse_line_number() {
-        let arg = String::from("[10]");
-        let actual_result:   ParseResult = parse_arg(&arg);
-        let expected_result: ParseResult = Ok(vec![10]);
-        assert_eq!(actual_result, expected_result);
     }
 }
