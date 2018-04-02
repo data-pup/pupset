@@ -13,6 +13,12 @@ pub enum ParseError {
     InvalidAddressNumber,
 }
 
+enum TokenCategory { Closure, AddressToken }
+struct ParseToken {
+    val: String,
+    cat: TokenCategory,
+}
+
 static LOWER_BOUNDS_CHARS: [&str; 2] = ["[", "("];
 static UPPER_BOUNDS_CHARS: [&str; 2] = ["]", ")"];
 static RANGE_DELIM:        &str      = "..";
@@ -41,6 +47,10 @@ fn arg_ends_with_closure(arg: &String) -> bool {
         .fold(false, |acc, elem| acc || elem)
 }
 
+fn split_arg(arg: &String) -> Vec<String> {
+    unimplemented!();
+}
+
 #[cfg(test)]
 mod parse_tests {
     use command::address_condition::parse::*;
@@ -51,7 +61,6 @@ mod parse_tests {
         let expected_result: ParseResult = Err(ParseError::ArgEmpty);
         assert_eq!(actual_result, expected_result);
     }
-
 
     #[test]
     fn parse_line_number() {
