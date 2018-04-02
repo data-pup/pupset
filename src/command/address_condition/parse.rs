@@ -1,15 +1,15 @@
-// use std::
 use std::ops::Index;
 use std::str::{Chars, FromStr};
 
 use command::address_condition::{
     Address,
-    // RangeBounds,
 };
 
 // Result type used to represent the results of the parsing process.
 pub type ParseResult = Result<AddressList, ArgParseError>;
 pub type AddressList = Vec<Address>;
+pub enum ClosureType { Inclusive, Exclusive }
+
 #[derive(Debug, PartialEq)]
 pub enum ArgParseError {
     ArgEmpty,              // Used if the argument is empty.
@@ -17,9 +17,6 @@ pub enum ArgParseError {
     InvalidAddressNumber,  // Used if the input does not contain valid addresses.
     StringParseError,      // Used if tokens could not be used to form a String.
 }
-
-// This represents the type of closure found at the boundary of an argument.
-enum ClosureType { Inclusive, Exclusive }
 
 // This is used by the splitting function, to represent the characters
 // identified as the upper/lower enclosures, and the individual addresses.
@@ -64,34 +61,36 @@ fn arg_ends_with_closure(arg: &String) -> bool {
 
 // Splits an argument string into separate tokens, or returns an error.
 fn split_arg(arg: &String) -> Result<ConditionTokens, ArgParseError> {
-    let mut arg_chars: Chars = arg.chars();
-    let lower_enclosure: String = get_lower_enclosure_token(&mut arg_chars)?;
-    let mut body_chars: Vec<char> = arg_chars.collect();
-    let upper_enclosure: String = get_upper_enclosure_token(&mut body_chars)?;
-    let body_tokens: AddressList = get_condition_body_tokens(body_chars)?;
+    let mut chars:           Chars       = arg.chars();
+    let     lower_enclosure: ClosureType = get_lower_enclosure_type(&mut chars)?;
+    let mut body:            Vec<char>   = chars.collect();
+    let     upper_enclosure: ClosureType = get_upper_enclosure_type(&mut body)?;
+    let     body_tokens:     AddressList = get_address_list(body)?;
     Ok(ConditionTokens {lower_enclosure, body_tokens, upper_enclosure})
 }
 
 // Use a char iterator to identify the opening closure of an address condition.
-fn get_lower_enclosure_token(chars: &mut Chars)
-    -> Result<String, ArgParseError> {
+fn get_lower_enclosure_type(chars: &mut Chars)
+    -> Result<ClosureType, ArgParseError> {
     match chars.next() {
-        Some(c) => Ok(c.to_string()),
-        None    => Err(ArgParseError::MissingClosuresError),
+        Some(c) if c == '[' => Ok(ClosureType::Inclusive),
+        Some(c) if c == '(' => Ok(ClosureType::Exclusive),
+        _ => Err(ArgParseError::MissingClosuresError),
     }
 }
 
 // Pop the last element off of the char vector, to identify the second closure.
-fn get_upper_enclosure_token(chars: &mut Vec<char>)
-    -> Result<String, ArgParseError> {
+fn get_upper_enclosure_type(chars: &mut Vec<char>)
+    -> Result<ClosureType, ArgParseError> {
     match chars.pop() {
-        Some(c) => Ok(c.to_string()),
-        None    => Err(ArgParseError::MissingClosuresError),
+        Some(c) if c == ']' => Ok(ClosureType::Inclusive),
+        Some(c) if c == ')' => Ok(ClosureType::Exclusive),
+        _ => Err(ArgParseError::MissingClosuresError),
     }
 }
 
 // Split the body of the address condition argument into address tokens.
-fn get_condition_body_tokens(body_chars: Vec<char>)
+fn get_address_list(body_chars: Vec<char>)
     -> Result<AddressList, ArgParseError> {
     let body_string: String = body_chars.into_iter().collect::<String>();
     let parse_results: Result<AddressList, _> =
