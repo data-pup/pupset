@@ -3,8 +3,8 @@ use std::ops::Index;
 use std::str::{Chars, FromStr};
 
 use command::address_condition::{
-    Address
-    RangeBounds,
+    Address,
+    // RangeBounds,
 };
 
 // Result type used to represent the results of the parsing process.
@@ -68,9 +68,8 @@ fn split_arg(arg: &String) -> Result<ConditionTokens, ArgParseError> {
     let lower_enclosure: String = get_lower_enclosure_token(&mut arg_chars)?;
     let mut body_chars: Vec<char> = arg_chars.collect();
     let upper_enclosure: String = get_upper_enclosure_token(&mut body_chars)?;
-    let body_tokens: AddressList = get_condition_body_tokens(body_string)?;
-    unimplemented!();
-    return Ok(ConditionTokens {lower_enclosure, body_tokens, upper_enclosure});
+    let body_tokens: AddressList = get_condition_body_tokens(body_chars)?;
+    Ok(ConditionTokens {lower_enclosure, body_tokens, upper_enclosure})
 }
 
 // Use a char iterator to identify the opening closure of an address condition.
