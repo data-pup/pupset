@@ -15,28 +15,29 @@ pub enum ParseError {
 
 pub fn parse_arg(arg: &String) -> ParseResult {
     if arg.is_empty() { return Err(ParseError::ArgEmpty); }
-    if !cond_closures::arg_starts_with_closure(&arg)
-    || !cond_closures::arg_ends_with_closure(&arg) {
+    if !check_closures(&arg) {
         return Err(ParseError::MissingClosuresError);
     }
     Ok(vec![])
 }
 
-mod cond_closures {
-    static LOWER_BOUNDS_CHARS: [&str; 2] = ["[", "("];
-    static UPPER_BOUNDS_CHARS: [&str; 2] = ["]", ")"];
+static LOWER_BOUNDS_CHARS: [&str; 2] = ["[", "("];
+static UPPER_BOUNDS_CHARS: [&str; 2] = ["]", ")"];
 
-    pub fn arg_starts_with_closure(arg: &String) -> bool {
-        LOWER_BOUNDS_CHARS.iter()
-            .map(|closure| arg.starts_with(closure))
-            .fold(false, |acc, elem| acc || elem)
-    }
+fn check_closures(arg: &String) -> bool {
+    arg_starts_with_closure(&arg) && arg_ends_with_closure(&arg)
+}
 
-    pub fn arg_ends_with_closure(arg: &String) -> bool {
-        UPPER_BOUNDS_CHARS.iter()
-            .map(|closure| arg.ends_with(closure))
-            .fold(false, |acc, elem| acc || elem)
-    }
+fn arg_starts_with_closure(arg: &String) -> bool {
+    LOWER_BOUNDS_CHARS.iter()
+        .map(|closure| arg.starts_with(closure))
+        .fold(false, |acc, elem| acc || elem)
+}
+
+fn arg_ends_with_closure(arg: &String) -> bool {
+    UPPER_BOUNDS_CHARS.iter()
+        .map(|closure| arg.ends_with(closure))
+        .fold(false, |acc, elem| acc || elem)
 }
 
 #[cfg(test)]
@@ -62,40 +63,32 @@ mod parse_tests {
 
 #[cfg(test)]
 mod cond_closures_tests {
-    use command::address_condition::parse::cond_closures::*;
+    use command::address_condition::parse::*;
 
     #[test]
     fn test_arg_starts_with_closure() {
-        let test_cases: Vec<(String, bool)> = vec![
-            (String::from("[1]"), true),
-            (String::from("(1)"), true),
-            (String::from("1"), false),
-            (String::from("]1["), false),
-            (String::from(")1("), false),
-        ];
-        let run_test = |test: &(String, bool)| {
-            let &(ref arg, ref expected_result) = test;
-            let actual_result = arg_starts_with_closure(arg);
+        let test_cases: Vec<ClosureTestCase> = init_test_cases();
+        let run_test = |test: &ClosureTestCase| {
+            let arg: &String = &test.input_string;
+            let expected_result: &bool = &test.expected_start_result;
+            let test_desc: &'static str = &test.test_description;
+            let actual_result: bool = arg_starts_with_closure(arg);
             assert_eq!(actual_result, *expected_result,
-                "Test failed for input: '{}'", arg);
+                "Test failed: {}", test_desc);
         };
         test_cases.iter().for_each(|test| run_test(test));
     }
 
     #[test]
     fn test_arg_ends_with_closure() {
-        let test_cases: Vec<(String, bool)> = vec![
-            (String::from("[1]"), true),
-            (String::from("(1)"), true),
-            (String::from("1"), false),
-            (String::from("]1["), false),
-            (String::from(")1("), false),
-        ];
-        let run_test = |test: &(String, bool)| {
-            let &(ref arg, ref expected_result) = test;
-            let actual_result = arg_ends_with_closure(arg);
+        let test_cases: Vec<ClosureTestCase> = init_test_cases();
+        let run_test = |test: &ClosureTestCase| {
+            let arg: &String = &test.input_string;
+            let expected_result: &bool = &test.expected_end_result;
+            let test_desc: &'static str = &test.test_description;
+            let actual_result: bool = arg_ends_with_closure(arg);
             assert_eq!(actual_result, *expected_result,
-                "Test failed for input: '{}'", arg);
+                "Test failed: {}", test_desc);
         };
         test_cases.iter().for_each(|test| run_test(test));
     }
@@ -107,6 +100,36 @@ mod cond_closures_tests {
                 expected_start_result: true,
                 expected_end_result:   true,
                 test_description:      "Single-digit, valid inclusive bounds.",
+            },
+            ClosureTestCase {
+                input_string:          String::from("[11]"),
+                expected_start_result: true,
+                expected_end_result:   true,
+                test_description:      "Two-digit, valid inclusive bounds.",
+            },
+            ClosureTestCase {
+                input_string:          String::from("(1)"),
+                expected_start_result: true,
+                expected_end_result:   true,
+                test_description:      "Single-digit, valid exclusive bounds.",
+            },
+            ClosureTestCase {
+                input_string:          String::from("1"),
+                expected_start_result: false,
+                expected_end_result:   false,
+                test_description:      "Single-digit, missing bounds.",
+            },
+            ClosureTestCase {
+                input_string:          String::from("[1"),
+                expected_start_result: true,
+                expected_end_result:   false,
+                test_description:      "Single-digit, missing upper bounds.",
+            },
+            ClosureTestCase {
+                input_string:          String::from("1]"),
+                expected_start_result: false,
+                expected_end_result:   true,
+                test_description:      "Single-digit, missing lower bounds.",
             },
         ]
     }
