@@ -1,3 +1,6 @@
+use std::ops::Index;
+use std::str::Chars;
+
 use command::address_condition::{
     Address
 };
@@ -47,7 +50,23 @@ fn arg_ends_with_closure(arg: &String) -> bool {
         .fold(false, |acc, elem| acc || elem)
 }
 
-fn split_arg(arg: &String) -> Vec<String> {
+fn split_arg(arg: &String) -> Vec<ParseToken> {
+    let mut arg_clone: String = arg.clone();
+    let mut body: Chars = arg_clone.chars();
+    let lower_enclosure: String = body.next()
+        .expect("Error identifying lower enclosure.")
+        .to_string();
+    let mut body_chars: Vec<char> = body.collect();
+    let upper_enclosure: String = body_chars.pop()
+        .expect("Error identifying upper enclosure.")
+        .to_string();
+
+    let body_string: String = body_chars
+        .into_iter()
+        .collect::<String>();
+
+    let addresses: Vec<&str> = body_string.split("..").collect();
+
     unimplemented!();
 }
 
