@@ -1,3 +1,4 @@
+// use std::
 use std::ops::Index;
 use std::str::{Chars, FromStr};
 
@@ -19,7 +20,7 @@ pub enum ArgParseError {
 // identified as the upper/lower enclosures, and the individual addresses.
 struct ConditionTokens {
     lower_enclosure: String,
-    addr_tokens:     Vec<String>,
+    body_tokens:     Vec<String>,
     upper_enclosure: String,
 }
 
@@ -52,28 +53,39 @@ fn arg_ends_with_closure(arg: &String) -> bool {
         .fold(false, |acc, elem| acc || elem)
 }
 
-fn split_arg(arg: &String) -> ConditionTokens {
-    let mut arg_clone: String = arg.clone();
-    let mut body: Chars = arg_clone.chars();
-    let lower_enclosure: String = body.next()
-        .expect("Error identifying lower enclosure.")
-        .to_string();
-    let mut body_chars: Vec<char> = body.collect();
-    let upper_enclosure: String = body_chars.pop()
-        .expect("Error identifying upper enclosure.")
-        .to_string();
-    let body_string: String = body_chars
-        .into_iter()
-        .collect::<String>();
-    let addr_tokens: Vec<String> = body_string
-        .split(RANGE_DELIM)
-        .map(|raw_str| String::from_str(raw_str).unwrap()) // FIXUP
-        .collect();
-    return ConditionTokens {
-        lower_enclosure,
-        addr_tokens,
-        upper_enclosure,
-    };
+fn split_arg(arg: &String) -> Result<ConditionTokens, ArgParseError> {
+    let mut arg_chars: Chars = arg.chars();
+
+    let lower_enclosure: String = get_lower_enclosure_token(&mut arg_chars)?;
+    let mut body_chars: Vec<char> = arg_chars.collect();
+    let upper_enclosure: String = get_upper_enclosure_token(&mut body_chars)?;
+    let body_string: String = body_chars.into_iter().collect::<String>();
+    let body_tokens: Vec<String> = get_condition_body_tokens(body_string);
+    return Ok(ConditionTokens {lower_enclosure, body_tokens, upper_enclosure});
+}
+
+fn get_lower_enclosure_token(chars: &mut Chars)
+    -> Result<String, ArgParseError> {
+    match chars.next() {
+        Some(c) => Ok(c.to_string()),
+        None    => Err(ArgParseError::MissingClosuresError),
+    }
+}
+
+fn get_upper_enclosure_token(chars: &mut Vec<char>)
+    -> Result<String, ArgParseError> {
+    match chars.pop() {
+        Some(c) => Ok(c.to_string()),
+        None    => Err(ArgParseError::MissingClosuresError),
+    }
+}
+
+fn get_condition_body_tokens(body: String)
+    // -> Result<Vec<String>, ArgParseError> {
+    -> Vec<String> {
+    body.split(RANGE_DELIM)
+        .map(|s: &str| String::from_str(s).unwrap()) // FIXUP: Return Err()
+        .collect()
 }
 
 #[cfg(test)]
