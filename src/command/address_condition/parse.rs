@@ -1,30 +1,30 @@
-use std::ops::Index;
-use std::str::{Chars, FromStr};
-
-use command::address_condition::{
-    Address,
-};
+use std::str::Chars;
+use command::address_condition::Address;
 
 // Result type used to represent the results of the parsing process.
-pub type ParseResult = Result<AddressList, ArgParseError>;
-pub type AddressList = Vec<Address>;
-pub enum ClosureType { Inclusive, Exclusive }
+pub type ParseResult = Result<ParsedAddrCond, ArgParseError>;
 
+// This is used by the splitting function, to represent the characters
+// identified as the upper/lower enclosures, and the individual addresses.
+#[derive(Debug, PartialEq)]
+pub struct ParsedAddrCond {
+    lower_enclosure: ClosureType,
+    body_tokens:     AddressList,
+    upper_enclosure: ClosureType,
+}
+
+// These are the different types of errors that the parsing function can return.
 #[derive(Debug, PartialEq)]
 pub enum ArgParseError {
     ArgEmpty,              // Used if the argument is empty.
     MissingClosuresError,  // Used if no bounds characters are used.
     InvalidAddressNumber,  // Used if the input does not contain valid addresses.
-    StringParseError,      // Used if tokens could not be used to form a String.
 }
 
-// This is used by the splitting function, to represent the characters
-// identified as the upper/lower enclosures, and the individual addresses.
-struct ConditionTokens {
-    lower_enclosure: ClosureType,
-    body_tokens:     AddressList,
-    upper_enclosure: ClosureType,
-}
+// Helper types and enums for the parsed address condition.
+pub type AddressList = Vec<Address>;
+#[derive(Debug, PartialEq)]
+pub enum ClosureType { Inclusive, Exclusive }
 
 // Static variables used to identify closures, and split addresses in a range.
 static LOWER_BOUNDS_CHARS: [&str; 2] = ["[", "("];
@@ -33,11 +33,9 @@ static RANGE_DELIM:        &str      = "..";
 
 // Parse an address condition argument.
 pub fn parse_arg(arg: &String) -> ParseResult {
-    if arg.is_empty() { return Err(ArgParseError::ArgEmpty); }
-    if !check_closures(&arg) {
-        return Err(ArgParseError::MissingClosuresError);
-    }
-    Ok(vec![])
+    if       arg.is_empty()       { Err(ArgParseError::ArgEmpty)             }
+    else if !check_closures(&arg) { Err(ArgParseError::MissingClosuresError) }
+    else                          { split_arg(&arg)                          }
 }
 
 // Check that an address condition begins and ends with valid closures.
@@ -60,13 +58,13 @@ fn arg_ends_with_closure(arg: &String) -> bool {
 }
 
 // Splits an argument string into separate tokens, or returns an error.
-fn split_arg(arg: &String) -> Result<ConditionTokens, ArgParseError> {
+fn split_arg(arg: &String) -> ParseResult {
     let mut chars:           Chars       = arg.chars();
     let     lower_enclosure: ClosureType = get_lower_enclosure_type(&mut chars)?;
     let mut body:            Vec<char>   = chars.collect();
     let     upper_enclosure: ClosureType = get_upper_enclosure_type(&mut body)?;
     let     body_tokens:     AddressList = get_address_list(body)?;
-    Ok(ConditionTokens {lower_enclosure, body_tokens, upper_enclosure})
+    Ok(ParsedAddrCond {lower_enclosure, body_tokens, upper_enclosure})
 }
 
 // Use a char iterator to identify the opening closure of an address condition.
@@ -115,11 +113,60 @@ mod parse_tests {
     }
 
     #[test]
-    fn parse_line_number() {
-        let arg = String::from("[10]");
-        let actual_result:   ParseResult = parse_arg(&arg);
-        let expected_result: ParseResult = Ok(vec![10]);
-        assert_eq!(actual_result, expected_result);
+    fn parsing_works() {
+        for curr_test_case in init_test_cases().into_iter() {
+            let ParseTestCase {
+                input_string,
+                expected_result,
+                test_description,
+            } = curr_test_case;
+            let actual_result = parse_arg(&input_string);
+            assert_eq!(actual_result, expected_result,
+                "Test Failed: {}", test_description);
+        }
+    }
+
+    fn init_test_cases() -> Vec<ParseTestCase> {
+        vec![
+            ParseTestCase {
+                input_string: String::from("[1]"),
+                expected_result: Ok(ParsedAddrCond{
+                    lower_enclosure: ClosureType::Inclusive,
+                    body_tokens:     vec![1],
+                    upper_enclosure: ClosureType::Inclusive,
+                }),
+                test_description: "Single digit inclusively enclosed.",
+            },
+            ParseTestCase {
+                input_string: String::from("[11]"),
+                expected_result: Ok(ParsedAddrCond{
+                    lower_enclosure: ClosureType::Inclusive,
+                    body_tokens:     vec![11],
+                    upper_enclosure: ClosureType::Inclusive,
+                }),
+                test_description: "Double digit inclusively enclosed.",
+            },
+            ParseTestCase {
+                input_string: String::from("[1..5)"),
+                expected_result: Ok(ParsedAddrCond{
+                    lower_enclosure: ClosureType::Inclusive,
+                    body_tokens:     vec![1, 5],
+                    upper_enclosure: ClosureType::Exclusive,
+                }),
+                test_description: "Double digit inclusively enclosed.",
+            },
+            ParseTestCase {
+                input_string: String::from(""),
+                expected_result: Err(ArgParseError::ArgEmpty),
+                test_description: "Empty argument should cause ArgEmpty error."
+            },
+        ]
+    }
+
+    struct ParseTestCase {
+        input_string:     String,
+        expected_result:  ParseResult,
+        test_description: &'static str,
     }
 }
 
@@ -160,48 +207,36 @@ mod cond_closures_tests {
             ClosureTestCase {
                 input_string:            String::from("[1]"),
                 expected_start_result:   true,
-                expected_body_tokens:    vec!["1"],
-                expected_address_values: vec![1],
                 expected_end_result:     true,
                 test_description:        "Single-digit, valid inclusive bounds.",
             },
             ClosureTestCase {
                 input_string:            String::from("[11]"),
                 expected_start_result:   true,
-                expected_body_tokens:    vec!["11"],
-                expected_address_values: vec![11],
                 expected_end_result:     true,
                 test_description:        "Two-digit, valid inclusive bounds.",
             },
             ClosureTestCase {
                 input_string:            String::from("(1)"),
                 expected_start_result:   true,
-                expected_body_tokens:    vec!["1"],
-                expected_address_values: vec![1],
                 expected_end_result:     true,
                 test_description:        "Single-digit, valid exclusive bounds.",
             },
             ClosureTestCase {
                 input_string:            String::from("1"),
                 expected_start_result:   false,
-                expected_body_tokens:    vec!["1"],
-                expected_address_values: vec![1],
                 expected_end_result:     false,
                 test_description:        "Single-digit, missing bounds.",
             },
             ClosureTestCase {
                 input_string:            String::from("[1"),
                 expected_start_result:   true,
-                expected_body_tokens:    vec!["1"],
-                expected_address_values: vec![1],
                 expected_end_result:     false,
                 test_description:        "Single-digit, missing upper bounds.",
             },
             ClosureTestCase {
                 input_string:            String::from("1]"),
                 expected_start_result:   false,
-                expected_body_tokens:    vec!["1"],
-                expected_address_values: vec![1],
                 expected_end_result:     true,
                 test_description:        "Single-digit, missing lower bounds.",
             },
@@ -211,8 +246,6 @@ mod cond_closures_tests {
     struct ClosureTestCase {
         input_string:            String,
         expected_start_result:   bool,
-        expected_body_tokens:    Vec<&'static str>,
-        expected_address_values: AddressList,
         expected_end_result:     bool,
         test_description:        &'static str,
     }
