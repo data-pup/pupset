@@ -4,6 +4,7 @@ use std::str::{Chars, FromStr};
 
 use command::address_condition::{
     Address
+    RangeBounds,
 };
 
 // Result type used to represent the results of the parsing process.
@@ -17,12 +18,15 @@ pub enum ArgParseError {
     StringParseError,      // Used if tokens could not be used to form a String.
 }
 
+// This represents the type of closure found at the boundary of an argument.
+enum ClosureType { Inclusive, Exclusive }
+
 // This is used by the splitting function, to represent the characters
 // identified as the upper/lower enclosures, and the individual addresses.
 struct ConditionTokens {
-    lower_enclosure: String,
-    body_tokens:     Vec<String>,
-    upper_enclosure: String,
+    lower_enclosure: ClosureType,
+    body_tokens:     AddressList,
+    upper_enclosure: ClosureType,
 }
 
 // Static variables used to identify closures, and split addresses in a range.
@@ -64,7 +68,8 @@ fn split_arg(arg: &String) -> Result<ConditionTokens, ArgParseError> {
     let lower_enclosure: String = get_lower_enclosure_token(&mut arg_chars)?;
     let mut body_chars: Vec<char> = arg_chars.collect();
     let upper_enclosure: String = get_upper_enclosure_token(&mut body_chars)?;
-    let body_tokens: Vec<String> = get_condition_body_tokens(body_string)?;
+    let body_tokens: AddressList = get_condition_body_tokens(body_string)?;
+    unimplemented!();
     return Ok(ConditionTokens {lower_enclosure, body_tokens, upper_enclosure});
 }
 
@@ -88,15 +93,15 @@ fn get_upper_enclosure_token(chars: &mut Vec<char>)
 
 // Split the body of the address condition argument into address tokens.
 fn get_condition_body_tokens(body_chars: Vec<char>)
-    -> Result<Vec<String>, ArgParseError> {
+    -> Result<AddressList, ArgParseError> {
     let body_string: String = body_chars.into_iter().collect::<String>();
-    let parse_results: Result<Vec<String>, _> =
+    let parse_results: Result<AddressList, _> =
         body_string.split(RANGE_DELIM)
-        .map(|s: &str| String::from_str(s))
+        .map(|s: &str| s.parse::<Address>())
         .collect();
     match parse_results {
         Ok(tokens) => Ok(tokens),
-        Err(_)     => Err(ArgParseError::StringParseError),
+        Err(_)     => Err(ArgParseError::InvalidAddressNumber),
     }
 }
 
