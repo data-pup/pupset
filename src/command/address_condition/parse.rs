@@ -14,6 +14,7 @@ pub enum ArgParseError {
     ArgEmpty,              // Used if the argument is empty.
     MissingClosuresError,  // Used if no bounds characters are used.
     InvalidAddressNumber,  // Used if the input does not contain valid addresses.
+    StringParseError,      // Used if tokens could not be used to form a String.
 }
 
 // This is used by the splitting function, to represent the characters
@@ -29,6 +30,7 @@ static LOWER_BOUNDS_CHARS: [&str; 2] = ["[", "("];
 static UPPER_BOUNDS_CHARS: [&str; 2] = ["]", ")"];
 static RANGE_DELIM:        &str      = "..";
 
+// Parse an address condition argument.
 pub fn parse_arg(arg: &String) -> ParseResult {
     if arg.is_empty() { return Err(ArgParseError::ArgEmpty); }
     if !check_closures(&arg) {
@@ -37,22 +39,26 @@ pub fn parse_arg(arg: &String) -> ParseResult {
     Ok(vec![])
 }
 
+// Check that an address condition begins and ends with valid closures.
 fn check_closures(arg: &String) -> bool {
     arg_starts_with_closure(&arg) && arg_ends_with_closure(&arg)
 }
 
+// Check that an address condition argument starts with a valid closure.
 fn arg_starts_with_closure(arg: &String) -> bool {
     LOWER_BOUNDS_CHARS.iter()
         .map(|closure| arg.starts_with(closure))
         .fold(false, |acc, elem| acc || elem)
 }
 
+// Check that an address condition argument ends with a valid closure.
 fn arg_ends_with_closure(arg: &String) -> bool {
     UPPER_BOUNDS_CHARS.iter()
         .map(|closure| arg.ends_with(closure))
         .fold(false, |acc, elem| acc || elem)
 }
 
+// Splits an argument string into separate tokens, or returns an error.
 fn split_arg(arg: &String) -> Result<ConditionTokens, ArgParseError> {
     let mut arg_chars: Chars = arg.chars();
 
@@ -60,10 +66,11 @@ fn split_arg(arg: &String) -> Result<ConditionTokens, ArgParseError> {
     let mut body_chars: Vec<char> = arg_chars.collect();
     let upper_enclosure: String = get_upper_enclosure_token(&mut body_chars)?;
     let body_string: String = body_chars.into_iter().collect::<String>();
-    let body_tokens: Vec<String> = get_condition_body_tokens(body_string);
+    let body_tokens: Vec<String> = get_condition_body_tokens(body_string)?;
     return Ok(ConditionTokens {lower_enclosure, body_tokens, upper_enclosure});
 }
 
+// Use a char iterator to identify the opening closure of an address condition.
 fn get_lower_enclosure_token(chars: &mut Chars)
     -> Result<String, ArgParseError> {
     match chars.next() {
@@ -72,6 +79,7 @@ fn get_lower_enclosure_token(chars: &mut Chars)
     }
 }
 
+// Pop the last element off of the char vector, to identify the second closure.
 fn get_upper_enclosure_token(chars: &mut Vec<char>)
     -> Result<String, ArgParseError> {
     match chars.pop() {
@@ -80,12 +88,17 @@ fn get_upper_enclosure_token(chars: &mut Vec<char>)
     }
 }
 
+// Split the body of the address condition argument into address tokens.
 fn get_condition_body_tokens(body: String)
-    // -> Result<Vec<String>, ArgParseError> {
-    -> Vec<String> {
-    body.split(RANGE_DELIM)
-        .map(|s: &str| String::from_str(s).unwrap()) // FIXUP: Return Err()
-        .collect()
+    -> Result<Vec<String>, ArgParseError> {
+    let parse_results: Result<Vec<String>, _> =
+        body.split(RANGE_DELIM)
+        .map(|s: &str| String::from_str(s))
+        .collect();
+    match parse_results {
+        Ok(tokens) => Ok(tokens),
+        Err(_)     => Err(ArgParseError::StringParseError),
+    }
 }
 
 #[cfg(test)]
