@@ -1,6 +1,8 @@
 pub mod address_condition;
 mod parse;
 
+use std::collections::HashMap;
+
 use self::address_condition::{
     Address,
     Condition,
