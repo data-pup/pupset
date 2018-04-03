@@ -31,6 +31,10 @@ impl Command {
             None           => true,
         }
     }
+
+    pub fn from_args(args: Vec<String>) -> Self {
+        unimplemented!();
+    }
 }
 
 #[cfg(test)]
