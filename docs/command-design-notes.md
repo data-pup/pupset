@@ -54,3 +54,26 @@ an upper or lower bounds is not inclusive.
 [0..3] // Lines 0, 1, 2, and 3.
 (1)    // INVALID. Enclose single addresses in `[` and `]`.
 ```
+
+## Command Actions
+
+After implementing an address condition submodule, and parsing logic to create
+these conditions using a string argument given in the program arguments, I
+needed to implement the actions associated with a command.
+
+While function pointers would be one way to implement this in other languages,
+this seemed like a problem that would be best solved with the trait system,
+assuming I structured things properly. This would likely mean that the
+`Command` struct that I had added previously would need to be refactored into
+a trait. Then, the individual commands could implement this trait.
+
+```rust
+pub trait Command {
+    fn new(args: Vec<String>) -> Self;
+    fn should_run(&self, curr_line: Address) -> bool;
+    fn run(&self, line: String) -> String;
+}
+```
+
+This is what I expected the command trait to look like when I started this
+refactoring work, but this is of course subject to change.

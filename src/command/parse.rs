@@ -1,7 +1,8 @@
-use command::Command;
+// use command::Command;
 use command::address_condition::parse_arg;
 
-fn parse_command(args: Vec<String>) -> Command {
+// fn parse_command(args: Vec<String>) -> Command {
+fn parse_command(args: Vec<String>) {
     // ----------------------------------------------------
     // TODO:
     // 1. Check if address condition was given
