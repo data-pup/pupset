@@ -11,11 +11,6 @@ struct Delete {
 }
 
 impl Command for Delete {
-    fn from_args(args: Vec<String>) -> Option<Box<Self>> {
-        // let argc: usize = args.len();
-        // if !INFO.argc.contains(&argc) { return None; }
-        unimplemented!();
-    }
 
     fn should_run(&self, curr_line: Address) -> bool {
         match self.cond {

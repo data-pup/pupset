@@ -12,7 +12,7 @@ use self::address_condition::{
 };
 
 pub trait Command {
-    fn from_args(args: Vec<String>) -> Option<Box<Self>>;
+    // fn from_args(args: Vec<String>) -> Option<Box<Self>>;
     fn should_run(&self, curr_line: Address) -> bool;
     fn run(&self, line: Line) -> Line;
 }
