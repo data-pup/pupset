@@ -13,9 +13,14 @@ use self::address_condition::{
 };
 
 pub trait Command {
-    // fn new(args: Vec<String>) -> Self; // TODO ...
+    fn from_args(args: Vec<String>) -> Option<Box<Self>>;
     fn should_run(&self, curr_line: Address) -> bool;
     fn run(&self, line: Line) -> Line;
+}
+
+pub struct CommandInfo {
+    argc: &'static [usize],
+    name: &'static str,
 }
 
 // pub enum CommandParseError {

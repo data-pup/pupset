@@ -1,12 +1,21 @@
-use command::{Command, Line};
+use command::{Command, CommandInfo, Line};
 use command::address_condition::{Address, Condition};
+
+const INFO: CommandInfo = CommandInfo {
+    argc: &[1, 2],
+    name: "delete",
+};
 
 struct Delete {
     cond: Option<Box<Condition>>,
 }
 
 impl Command for Delete {
-    // fn new(args: Vec<String>) -> Self; // TODO
+    fn from_args(args: Vec<String>) -> Option<Box<Self>> {
+        // let argc: usize = args.len();
+        // if !INFO.argc.contains(&argc) { return None; }
+        unimplemented!();
+    }
 
     fn should_run(&self, curr_line: Address) -> bool {
         match self.cond {
