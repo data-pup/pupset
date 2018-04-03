@@ -25,6 +25,7 @@ impl Command {
         }
     }
 
+    /// Check whether a command should run for the current line.
     pub fn should_run(&self, curr_line:Address) -> bool {
         match self.cond {
             Some(ref cond) => cond.applies(curr_line),
@@ -32,6 +33,7 @@ impl Command {
         }
     }
 
+    /// Create a command using a vector of argument strings.
     pub fn from_args(args: Vec<String>) -> Self {
         unimplemented!();
     }
