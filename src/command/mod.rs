@@ -1,4 +1,5 @@
 pub mod address_condition;
+pub mod commands;
 mod parse;
 
 use std::collections::HashMap;
@@ -9,8 +10,6 @@ use self::address_condition::{
     OneAddressCondition,
     LineNumber,
     parse_arg,
-    // LineRange,
-    // RangeBounds,
 };
 
 pub trait Command {
