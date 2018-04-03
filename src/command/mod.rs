@@ -7,7 +7,6 @@ use std::collections::HashMap;
 use self::address_condition::{
     Address,
     Condition,
-    OneAddressCondition,
     LineNumber,
     parse_arg,
 };

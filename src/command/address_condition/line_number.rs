@@ -1,21 +1,20 @@
 use command::address_condition::{
     Address,
     Condition,
-    OneAddressCondition,
 };
 
 pub struct LineNumber {
     n: Address,
 }
 
-impl Condition for LineNumber {
-    fn applies(&self, current_line: Address) -> bool { self.n == current_line }
-}
-
-impl OneAddressCondition for LineNumber {
-    fn new(addr: Address) -> Self {
+impl LineNumber {
+    pub fn new(addr: Address) -> Self {
         LineNumber { n:addr }
     }
+}
+
+impl Condition for LineNumber {
+    fn applies(&self, current_line: Address) -> bool { self.n == current_line }
 }
 
 #[cfg(test)]

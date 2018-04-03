@@ -41,7 +41,6 @@ mod delete_tests {
         Address,
         Condition,
         LineNumber,
-        OneAddressCondition,
     };
 
     #[test]

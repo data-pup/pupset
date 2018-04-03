@@ -12,13 +12,5 @@ pub trait Condition {
     fn applies(&self, current_line: Address) -> bool;
 }
 
-pub trait OneAddressCondition : Condition {
-    fn new(addr: Address) -> Self;
-}
-
-pub trait TwoAddressCondition : Condition {
-    fn new(a: Address, b: Address) -> Self;
-}
-
 #[derive(Clone)]
 pub struct RangeBounds { val: Address, is_inclusive: bool }
