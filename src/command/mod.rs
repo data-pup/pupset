@@ -18,6 +18,12 @@ pub trait Command {
     fn run(&self, line: Line) -> Line;
 }
 
+// pub enum CommandParseError {
+//     InvalidArgCount,
+//     InvalidAddressCond,
+//     InvalidCommandName,
+// }
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct Line {
     contents: String,
