@@ -19,6 +19,7 @@ pub enum ArgParseError {
     ArgEmpty,              // Used if the argument is empty.
     MissingClosuresError,  // Used if no bounds characters are used.
     InvalidAddressNumber,  // Used if the input does not contain valid addresses.
+    InvalidClosuresError,  // Used if a single address is not inclusively bound.
 }
 
 // Helper types and enums for the parsed address condition.
@@ -64,7 +65,9 @@ fn split_arg(arg: &String) -> ParseResult {
     let mut body:            Vec<char>   = chars.collect();
     let     upper_enclosure: ClosureType = get_upper_enclosure_type(&mut body)?;
     let     body_tokens:     AddressList = get_address_list(body)?;
-    Ok(ParsedAddrCond {lower_enclosure, body_tokens, upper_enclosure})
+    return validate_split(ParsedAddrCond {
+        lower_enclosure, body_tokens, upper_enclosure,
+    });
 }
 
 // Use a char iterator to identify the opening closure of an address condition.
@@ -98,6 +101,18 @@ fn get_address_list(body_chars: Vec<char>)
     match parse_results {
         Ok(tokens) => Ok(tokens),
         Err(_)     => Err(ArgParseError::InvalidAddressNumber),
+    }
+}
+
+/// Checks that the parse results are valid, if the results do not
+/// seem well formed, return an error. Otherwise, return the results.
+fn validate_split(parse_results: ParsedAddrCond) -> ParseResult {
+    match parse_results.body_tokens.len() {
+        0 => Err(ArgParseError::ArgEmpty),
+        1 if   parse_results.lower_enclosure == ClosureType::Exclusive
+            || parse_results.lower_enclosure == ClosureType::Exclusive
+            => Err(ArgParseError::InvalidClosuresError),
+        _ => Ok(parse_results),
     }
 }
 
@@ -158,7 +173,22 @@ mod parse_tests {
             ParseTestCase {
                 input_string: String::from(""),
                 expected_result: Err(ArgParseError::ArgEmpty),
-                test_description: "Empty argument should cause ArgEmpty error."
+                test_description: "Empty argument should cause ArgEmpty error.",
+            },
+            ParseTestCase {
+                input_string: String::from("[]"),
+                expected_result: Err(ArgParseError::InvalidAddressNumber),
+                test_description: "Empty [] enclosure should cause error.",
+            },
+            ParseTestCase {
+                input_string: String::from("()"),
+                expected_result: Err(ArgParseError::InvalidAddressNumber),
+                test_description: "Empty () enclosure should cause error.",
+            },
+            ParseTestCase {
+                input_string: String::from("(1)"),
+                expected_result: Err(ArgParseError::InvalidClosuresError),
+                test_description: "Single address must be enclosed inclusively.",
             },
         ]
     }
