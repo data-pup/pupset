@@ -18,6 +18,7 @@ pub trait Command {
     fn run(&self, line: Line) -> Line;
 }
 
+#[derive(Clone, Debug, PartialEq)]
 pub struct Line {
     contents: String,
     addr:     Address,
