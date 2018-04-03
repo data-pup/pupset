@@ -1,5 +1,10 @@
 use std::str::Chars;
-use command::address_condition::Address;
+use command::address_condition::{
+    Address,
+    Condition,
+    LineNumber,
+    LineRange,
+};
 
 // Result type used to represent the results of the parsing process.
 pub type ParseResult = Result<ParsedAddrCond, ArgParseError>;
@@ -20,6 +25,7 @@ pub enum ArgParseError {
     MissingClosuresError,  // Used if no bounds characters are used.
     InvalidAddressNumber,  // Used if the input does not contain valid addresses.
     InvalidClosuresError,  // Used if a single address is not inclusively bound.
+    InvalidAddressCount,   // Used if too many, or too few addresses were given.
 }
 
 // Helper types and enums for the parsed address condition.
@@ -32,12 +38,30 @@ static LOWER_BOUNDS_CHARS: [&str; 2] = ["[", "("];
 static UPPER_BOUNDS_CHARS: [&str; 2] = ["]", ")"];
 static RANGE_DELIM:        &str      = "..";
 
-// Parse an address condition argument.
-pub fn parse_arg(arg: &String) -> ParseResult {
-    if       arg.is_empty()       { Err(ArgParseError::ArgEmpty)             }
+/// Parse an address condition argument in the form of a string. If the input
+/// is not valid, return an error. If the argument is valid, allocate a new
+/// condition object corresponding to the number of addresses given.
+pub fn parse_arg(arg: &String) -> Result<Box<Condition>, ArgParseError> {
+    if      arg.is_empty()        { Err(ArgParseError::ArgEmpty)             }
     else if !check_closures(&arg) { Err(ArgParseError::MissingClosuresError) }
-    else                          { split_arg(&arg)                          }
+    else {
+        let ParsedAddrCond {
+            lower_enclosure, body_tokens, upper_enclosure,
+        } = split_arg(&arg)?;
+        match body_tokens.len() {
+            1 => Ok(Box::new(LineNumber::new(body_tokens[0]))),
+            2 => Ok(Box::new(LineRange::new(body_tokens[0], body_tokens[1]))),
+            _ => Err(ArgParseError::InvalidAddressCount),
+        }
+    }
 }
+
+// // Parse an address condition argument.
+// pub fn parse_arg(arg: &String) -> ParseResult {
+//     if       arg.is_empty()       { Err(ArgParseError::ArgEmpty)             }
+//     else if !check_closures(&arg) { Err(ArgParseError::MissingClosuresError) }
+//     else                          { split_arg(&arg)                          }
+// }
 
 // Check that an address condition begins and ends with valid closures.
 fn check_closures(arg: &String) -> bool {
@@ -121,13 +145,6 @@ mod parse_tests {
     use command::address_condition::parse::*;
 
     #[test]
-    fn empty_string_returns_err() {
-        let actual_result:   ParseResult = parse_arg(&String::from(""));
-        let expected_result: ParseResult = Err(ArgParseError::ArgEmpty);
-        assert_eq!(actual_result, expected_result);
-    }
-
-    #[test]
     fn parsing_works() {
         for curr_test_case in init_test_cases().into_iter() {
             let ParseTestCase {
@@ -145,31 +162,19 @@ mod parse_tests {
         vec![
             ParseTestCase {
                 input_string: String::from("[1]"),
-                expected_result: Ok(ParsedAddrCond{
-                    lower_enclosure: ClosureType::Inclusive,
-                    body_tokens:     vec![1],
-                    upper_enclosure: ClosureType::Inclusive,
-                }),
+                expected_result: Ok(Box::new(LineNumber::new(1))),
                 test_description: "Single digit inclusively enclosed.",
             },
             ParseTestCase {
                 input_string: String::from("[11]"),
-                expected_result: Ok(ParsedAddrCond{
-                    lower_enclosure: ClosureType::Inclusive,
-                    body_tokens:     vec![11],
-                    upper_enclosure: ClosureType::Inclusive,
-                }),
+                expected_result: Ok(Box::new(LineNumber::new(11))),
                 test_description: "Double digit inclusively enclosed.",
             },
-            ParseTestCase {
-                input_string: String::from("[1..5)"),
-                expected_result: Ok(ParsedAddrCond{
-                    lower_enclosure: ClosureType::Inclusive,
-                    body_tokens:     vec![1, 5],
-                    upper_enclosure: ClosureType::Exclusive,
-                }),
-                test_description: "Double digit inclusively enclosed.",
-            },
+            // ParseTestCase {
+            //     input_string: String::from("[1..5)"),
+            //     expected_result: Ok(
+            //     test_description: "Double digit inclusively enclosed.",
+            // },
             ParseTestCase {
                 input_string: String::from(""),
                 expected_result: Err(ArgParseError::ArgEmpty),
@@ -195,7 +200,7 @@ mod parse_tests {
 
     struct ParseTestCase {
         input_string:     String,
-        expected_result:  ParseResult,
+        expected_result:  Box<Condition>,
         test_description: &'static str,
     }
 }
