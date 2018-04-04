@@ -22,9 +22,11 @@ pub struct Command {
 impl Command {
     pub fn run(&self, line: Line) -> Line {
         if !self.should_run(&line) { return line; }
-        match &self.comm {
-            Print => unimplemented!(),
-            Delete => return Line { addr: line.addr, contents: String::new() }
+        match self.comm {
+            CommandType::Print => unimplemented!(),
+            CommandType::Delete => return Line {
+                addr: line.addr, contents: String::new()
+            },
         }
     }
 

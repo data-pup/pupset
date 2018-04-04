@@ -97,5 +97,4 @@ mod line_number_parse_tests {
                 }
         });
     }
-
 }
