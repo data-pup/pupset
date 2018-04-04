@@ -1,4 +1,5 @@
 use command::{
+    Address,
     Command,
     CommandType::Delete,
 };
@@ -13,6 +14,15 @@ struct DeleteTestCase {
 #[test]
 fn it_works() {
     let comm = Command { comm: Delete };
+}
+
+#[test]
+fn delete_with_no_condition_clears_line() {
+    let comm = Command { comm: Delete };
+    let input = Line { addr: 0, contents: String::from("String to Delete.") };
+    let output = comm.run();
+    let expected = Line { addr: 0, contents: String::from("") };
+    assert_eq!(output, expected);
 }
 
 // fn create_lines_vec(input: &Vec<&'static str>) -> Vec<Line> {

@@ -1,5 +1,4 @@
 pub mod address_condition;
-pub mod commands;
 
 mod line;
 pub use command::line::Line;
