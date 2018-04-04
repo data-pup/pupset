@@ -1,15 +1,20 @@
 pub mod address_condition;
 pub mod commands;
+
+mod line;
+pub use command::line::Line;
+
 mod parse;
 
 use std::collections::HashMap;
 
 use self::address_condition::{
-    Address,
     Condition,
     LineNumber,
     parse_arg,
 };
+
+pub type Address = u32;
 
 pub trait Command {
     // fn from_args(args: Vec<String>) -> Option<Box<Self>>;
@@ -22,14 +27,3 @@ pub struct CommandInfo {
     name: &'static str,
 }
 
-// pub enum CommandParseError {
-//     InvalidArgCount,
-//     InvalidAddressCond,
-//     InvalidCommandName,
-// }
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct Line {
-    contents: String,
-    addr:     Address,
-}

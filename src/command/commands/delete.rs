@@ -1,5 +1,5 @@
-use command::{Command, CommandInfo, Line};
-use command::address_condition::{Address, Condition};
+use command::{Address, Command, CommandInfo, Line};
+use command::address_condition::Condition;
 
 const INFO: CommandInfo = CommandInfo {
     argc: &[1, 2],
@@ -30,10 +30,9 @@ impl Command for Delete {
 
 #[cfg(test)]
 mod delete_tests {
-    use command::{Command, Line};
+    use command::{Address, Command, Line};
     use command::commands::delete::Delete;
     use command::address_condition::{
-        Address,
         Condition,
         LineNumber,
     };

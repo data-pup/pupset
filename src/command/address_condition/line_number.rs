@@ -1,7 +1,5 @@
-use command::address_condition::{
-    Address,
-    Condition,
-};
+use command::Address;
+use command::address_condition::Condition;
 
 #[derive(Debug, PartialEq)]
 pub struct LineNumber {

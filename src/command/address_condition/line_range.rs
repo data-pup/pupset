@@ -1,5 +1,5 @@
+use command::Address;
 use command::address_condition::{
-    Address,
     Condition,
     RangeBounds,
 };
