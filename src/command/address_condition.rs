@@ -23,7 +23,10 @@ pub struct AddressCondition {
 
 impl AddressCondition {
     fn applies(&self, addr: Address) -> bool {
-        unimplemented!();
+        match values {
+            Value::LineNumber(n) => addr == n,
+            _ => unimplemented!(),
+        }
     }
 }
 
