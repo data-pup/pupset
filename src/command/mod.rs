@@ -1,14 +1,11 @@
 mod address_condition;
-mod line;
-
 pub use self::address_condition::{
     AddressCondition,
     AddressConditionParseError,
-    Values,
 };
 
+mod line;
 pub use self::line::Line;
-
 
 pub type Address = u32;
 
