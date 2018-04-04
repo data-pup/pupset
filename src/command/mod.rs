@@ -35,8 +35,9 @@ impl Command {
     }
 }
 
-impl From<Vec<String>> for Command {
-    fn from(s: Vec<String>) -> Self {
-        unimplemented!();
-    }
-}
+// TODO: ...
+// impl From<Vec<String>> for Command {
+//     fn from(s: Vec<String>) -> Self {
+//         unimplemented!();
+//     }
+// }

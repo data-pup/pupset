@@ -22,7 +22,11 @@ enum Values {
 #[derive(Debug, PartialEq)]
 pub enum AddressConditionParseError {
     ArgEmpty,
+    InvalidArgument,
+    StringParseError,
 }
+
+type ParseResult = Result<AddressCondition, AddressConditionParseError>;
 
 #[derive(Debug, PartialEq)]
 pub struct AddressCondition {
@@ -41,8 +45,34 @@ impl AddressCondition {
 impl FromStr for AddressCondition {
     type Err = AddressConditionParseError;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok(AddressCondition { vals: Values::LineNumber(0) })
+    fn from_str(s: &str) -> ParseResult {
+        let cond_tokens: Result<Vec<String>, _> = s
+            .split("..")
+            .map(String::from_str)
+            .collect();
+        if cond_tokens.is_err() {
+            return Err(AddressConditionParseError::StringParseError);
+        } else {
+            let tokens = cond_tokens.unwrap();
+            return match tokens.len() {
+                1 => AddressCondition::parse_line_number(&tokens[0]),
+                2 => AddressCondition::parse_line_range(&tokens[0], &tokens[1]),
+                3 => unimplemented!(),
+                _ => Err(AddressConditionParseError::InvalidArgument),
+            }
+        }
+    }
+}
+
+// FromStr private helper methods.
+impl AddressCondition {
+    fn parse_line_number(arg: &String) -> ParseResult {
+        unimplemented!();
+    }
+
+    fn parse_line_range(min_token: &String, max_token: &String)
+        -> ParseResult {
+        unimplemented!();
     }
 }
 
