@@ -149,13 +149,13 @@ mod parse_tests {
                 parse_arg(&input_string);
             match expected_result.is_ok() {
                 true => {
-                    let actual_cond = actual_result.unwrap();
+                    let actual_cond   = actual_result.unwrap();
                     let expected_cond = expected_result.unwrap();
                     assert_eq!(*actual_cond, *expected_cond,
                         "Test Failed: {}", test_description);
                 }
                 false => {
-                    let actual_err = actual_result.unwrap_err();
+                    let actual_err   = actual_result.unwrap_err();
                     let expected_err = expected_result.unwrap_err();
                     assert_eq!(actual_err, expected_err,
                         "Test Failed: {}", test_description);
