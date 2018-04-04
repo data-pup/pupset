@@ -176,11 +176,6 @@ mod parse_tests {
                 expected_result: Ok(Box::new(LineNumber::new(11))),
                 test_description: "Double digit inclusively enclosed.",
             },
-            // ParseTestCase {
-            //     input_string: String::from("[1..5)"),
-            //     expected_result: Ok(
-            //     test_description: "Double digit inclusively enclosed.",
-            // },
             ParseTestCase {
                 input_string: String::from(""),
                 expected_result: Err(ArgParseError::ArgEmpty),
