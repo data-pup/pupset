@@ -16,7 +16,6 @@ use self::address_condition::{
 
 pub type Address = u32;
 
-
 pub enum CommandType {
     Delete,
     Print,
