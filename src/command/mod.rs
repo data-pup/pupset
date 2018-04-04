@@ -20,16 +20,19 @@ pub struct Command {
 }
 
 impl Command {
-    fn should_run(&self, line: &Line) -> bool {
-        return self.cond.applies(line.addr);
-    }
-
+    /// Run the command for the given line.
     pub fn run(&self, line: Line) -> Line {
         if !self.should_run(&line) { return line; }
         match &self.comm {
             Print => unimplemented!(),
             Delete => return Line { addr: line.addr, contents: String::new() }
         }
+    }
+
+    /// Uses the address condition to check whether the current line
+    /// should be edited by this command.
+    fn should_run(&self, line: &Line) -> bool {
+        return self.cond.applies(line.addr);
     }
 }
 
