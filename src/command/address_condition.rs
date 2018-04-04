@@ -39,6 +39,15 @@ impl AddressCondition {
     pub fn applies(&self, addr: Address) -> bool {
         match self.vals {
             Values::LineNumber(n) => addr == n,
+            Values::Range { min, min_inclusive, max, max_inclusive } => {
+                let within_lower_bound: bool =
+                    if min_inclusive { min <= addr }
+                    else             { min <  addr };
+                if within_lower_bound {
+                    return if max_inclusive { addr <= max }
+                           else             { addr <  max };
+                } else { return false; }
+            }
             _ => unimplemented!(),
         }
     }
