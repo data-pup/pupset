@@ -1,5 +1,5 @@
 use command::Address;
-use command::address_condition::Condition;
+use command::address_condition::AddressCondition;
 
 #[derive(Debug, PartialEq)]
 pub struct LineNumber {
@@ -12,9 +12,9 @@ impl LineNumber {
     }
 }
 
-impl Condition for LineNumber {
-    fn applies(&self, current_line: Address) -> bool { self.n == current_line }
-}
+// impl AddressCondition for LineNumber {
+//     fn applies(&self, current_line: Address) -> bool { self.n == current_line }
+// }
 
 #[cfg(test)]
 mod tests {

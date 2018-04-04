@@ -10,8 +10,13 @@ pub use self::line_number::LineNumber;
 pub use self::line_range::LineRange;
 pub use self::parse::parse_arg;
 
-pub trait Condition : Debug {
-    fn applies(&self, current_line: Address) -> bool;
+pub struct AddressCondition {
+}
+
+impl AddressCondition {
+    fn applies(&self, current_line: Address) -> bool {
+        unimplemented!();
+    }
 }
 
 #[derive(Clone, Debug, PartialEq)]

@@ -1,6 +1,6 @@
 use command::Address;
 use command::address_condition::{
-    Condition,
+    AddressCondition,
     RangeBounds,
 };
 
@@ -19,11 +19,11 @@ impl LineRange {
     }
 }
 
-impl Condition for LineRange {
-    fn applies(&self, current_line: Address) -> bool {
-        self.check_min(current_line) && self.check_max(current_line)
-    }
-}
+// impl AddressCondition for LineRange {
+//     fn applies(&self, current_line: Address) -> bool {
+//         self.check_min(current_line) && self.check_max(current_line)
+//     }
+// }
 
 impl LineRange {
     fn check_min(&self, addr: Address) -> bool {

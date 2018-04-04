@@ -1,7 +1,7 @@
 use std::str::Chars;
 use command::Address;
 use command::address_condition::{
-    Condition,
+    AddressCondition,
     LineNumber,
     LineRange,
 };
@@ -41,19 +41,20 @@ static RANGE_DELIM:        &str      = "..";
 /// Parse an address condition argument in the form of a string. If the input
 /// is not valid, return an error. If the argument is valid, allocate a new
 /// condition object corresponding to the number of addresses given.
-pub fn parse_arg(arg: &String) -> Result<Box<Condition>, ArgParseError> {
-    if      arg.is_empty()        { Err(ArgParseError::ArgEmpty)             }
-    else if !check_closures(&arg) { Err(ArgParseError::MissingClosuresError) }
-    else {
-        let ParsedAddrCond {
-            lower_enclosure, body_tokens, upper_enclosure,
-        } = split_arg(&arg)?;
-        match body_tokens.len() {
-            1 => Ok(Box::new(LineNumber::new(body_tokens[0]))),
-            2 => Ok(Box::new(LineRange::new(body_tokens[0], body_tokens[1]))),
-            _ => Err(ArgParseError::InvalidAddressCount),
-        }
-    }
+pub fn parse_arg(arg: &String) -> Result<Box<AddressCondition>, ArgParseError> {
+    unimplemented!();
+    // if      arg.is_empty()        { Err(ArgParseError::ArgEmpty)             }
+    // else if !check_closures(&arg) { Err(ArgParseError::MissingClosuresError) }
+    // else {
+    //     let ParsedAddrCond {
+    //         lower_enclosure, body_tokens, upper_enclosure,
+    //     } = split_arg(&arg)?;
+    //     match body_tokens.len() {
+    //         1 => Ok(Box::new(LineNumber::new(body_tokens[0]))),
+    //         2 => Ok(Box::new(LineRange::new(body_tokens[0], body_tokens[1]))),
+    //         _ => Err(ArgParseError::InvalidAddressCount),
+    //     }
+    // }
 }
 
 // Check that an address condition begins and ends with valid closures.

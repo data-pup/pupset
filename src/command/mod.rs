@@ -8,7 +8,7 @@ mod parse;
 use std::collections::HashMap;
 
 use self::address_condition::{
-    Condition,
+    AddressCondition,
     LineNumber,
     parse_arg,
 };
@@ -22,6 +22,7 @@ pub enum CommandType {
 
 pub struct Command {
     comm: CommandType,
+    // cond:
 }
 
 impl Command {
@@ -39,9 +40,3 @@ impl Command {
 
     // fn from_args(args: Vec<String>) -> Option<Box<Self>>;
 }
-
-// ----------------------------------------------------------------------------
-// pub struct CommandInfo {
-//     argc: &'static [usize],
-//     name: &'static str,
-// }
