@@ -1,9 +1,9 @@
-pub mod address_condition;
-
+mod address_condition;
 mod line;
-pub use self::line::Line;
 
 use self::address_condition::AddressCondition;
+pub use self::line::Line;
+
 
 pub type Address = u32;
 
@@ -14,16 +14,16 @@ pub enum CommandType {
 
 pub struct Command {
     comm: CommandType,
-    // cond:
+    cond: AddressCondition,
 }
 
 impl Command {
-    fn should_run(&self, curr_line: Address) -> bool {
-        unimplemented!();
+    fn should_run(&self, line: &Line) -> bool {
+        return self.cond.applies(line.addr);
     }
 
     pub fn run(&self, line: Line) -> Line {
-        if !self.should_run(line.addr) { return line; }
+        if !self.should_run(&line) { return line; }
         match &self.comm {
             Print => unimplemented!(),
             Delete => return Line { addr: line.addr, contents: String::new() }

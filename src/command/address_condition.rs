@@ -28,7 +28,7 @@ pub struct AddressCondition {
 }
 
 impl AddressCondition {
-    fn applies(&self, addr: Address) -> bool {
+    pub fn applies(&self, addr: Address) -> bool {
         match self.vals {
             Values::LineNumber(n) => addr == n,
             _ => unimplemented!(),
@@ -54,10 +54,5 @@ mod condition_tests {
         let comm = input.parse::<AddressCondition>().unwrap();
         assert_eq!(comm.applies(0), true);
         assert_eq!(comm.applies(1), false);
-    }
-
-    struct CondParseTestCase {
-        input: &'static str,
-        expected: AddressCondition,
     }
 }
