@@ -3,6 +3,7 @@ use command::address_condition::{
     Condition,
 };
 
+#[derive(Debug, PartialEq)]
 pub struct LineNumber {
     n: Address,
 }

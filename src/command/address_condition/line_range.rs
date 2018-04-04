@@ -4,6 +4,7 @@ use command::address_condition::{
     RangeBounds,
 };
 
+#[derive(Debug, PartialEq)]
 pub struct LineRange {
     min: RangeBounds,
     max: RangeBounds

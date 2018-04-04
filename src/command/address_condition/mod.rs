@@ -1,3 +1,5 @@
+use std::fmt::Debug;
+
 mod line_number;
 mod line_range;
 mod parse;
@@ -8,9 +10,9 @@ pub use self::parse::parse_arg;
 
 pub type Address = u32;
 
-pub trait Condition {
+pub trait Condition : Debug {
     fn applies(&self, current_line: Address) -> bool;
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct RangeBounds { val: Address, is_inclusive: bool }

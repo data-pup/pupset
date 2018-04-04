@@ -56,13 +56,6 @@ pub fn parse_arg(arg: &String) -> Result<Box<Condition>, ArgParseError> {
     }
 }
 
-// // Parse an address condition argument.
-// pub fn parse_arg(arg: &String) -> ParseResult {
-//     if       arg.is_empty()       { Err(ArgParseError::ArgEmpty)             }
-//     else if !check_closures(&arg) { Err(ArgParseError::MissingClosuresError) }
-//     else                          { split_arg(&arg)                          }
-// }
-
 // Check that an address condition begins and ends with valid closures.
 fn check_closures(arg: &String) -> bool {
     arg_starts_with_closure(&arg) && arg_ends_with_closure(&arg)
@@ -152,7 +145,8 @@ mod parse_tests {
                 expected_result,
                 test_description,
             } = curr_test_case;
-            let actual_result = parse_arg(&input_string);
+            let actual_result: Result<Box<Condition>, ArgParseError> =
+                parse_arg(&input_string);
             assert_eq!(actual_result, expected_result,
                 "Test Failed: {}", test_description);
         }
