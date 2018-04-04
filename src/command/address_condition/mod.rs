@@ -17,8 +17,12 @@ pub struct AddressCondition {
 }
 
 impl AddressCondition {
-    fn applies(&self, current_line: Address) -> bool {
-        unimplemented!();
+    fn applies(&self, addr: Address) -> bool {
+        if      addr <  self.min { false }
+        else if addr == self.min { true  }
+        else {
+            unimplemented!();
+        }
     }
 }
 

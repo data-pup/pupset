@@ -12,10 +12,6 @@ impl LineNumber {
     }
 }
 
-// impl AddressCondition for LineNumber {
-//     fn applies(&self, current_line: Address) -> bool { self.n == current_line }
-// }
-
 #[cfg(test)]
 mod tests {
     use command::address_condition::line_number::*;
@@ -50,27 +46,27 @@ mod tests {
         TestCase { addresses, conditions, expected_results }
     }
 
-    #[test]
-    fn line_number_tests() {
-        let TestCase { addresses, conditions, expected_results } = init_test_objects();
+    // #[test]
+    // fn line_number_tests() {
+    //     let TestCase { addresses, conditions, expected_results } = init_test_objects();
 
-        let condition_results: Vec<Vec<bool>> =
-            addresses.iter()    // Iterate through the addresses.
-            .map(|curr_addr: &Address| -> Vec<bool> {
-                conditions      // For each address, check which conditions
-                    .iter()     // apply to the current line number.
-                    .map(|curr_cond: &LineNumber| -> bool {
-                        curr_cond.applies(*curr_addr)
-                    })
-                    .collect()
-            })
-            .collect();
+    //     let condition_results: Vec<Vec<bool>> =
+    //         addresses.iter()    // Iterate through the addresses.
+    //         .map(|curr_addr: &Address| -> Vec<bool> {
+    //             conditions      // For each address, check which conditions
+    //                 .iter()     // apply to the current line number.
+    //                 .map(|curr_cond: &LineNumber| -> bool {
+    //                     curr_cond.applies(*curr_addr)
+    //                 })
+    //                 .collect()
+    //         })
+    //         .collect();
 
-        let mut i: usize = 0; // Check the test results line by line.
-        for expected in expected_results.iter() {
-            let actual = &condition_results[i];
-            assert_eq!(*expected, *actual, "Test failed at line: {}", i);
-            i += 1;
-        }
-    }
+    //     let mut i: usize = 0; // Check the test results line by line.
+    //     for expected in expected_results.iter() {
+    //         let actual = &condition_results[i];
+    //         assert_eq!(*expected, *actual, "Test failed at line: {}", i);
+    //         i += 1;
+    //     }
+    // }
 }

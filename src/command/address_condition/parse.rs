@@ -202,11 +202,11 @@ mod parse_tests {
         ]
     }
 
-    struct ParseTestCase {
-        input_string:     String,
-        expected_result:  Result<Box<Condition>, ArgParseError>,
-        test_description: &'static str,
-    }
+    // struct ParseTestCase {
+    //     input_string:     String,
+    //     expected_result:  Result<Box<Condition>, ArgParseError>,
+    //     test_description: &'static str,
+    // }
 }
 
 #[cfg(test)]
