@@ -3,10 +3,6 @@ pub mod address_condition;
 mod line;
 pub use command::line::Line;
 
-mod parse;
-
-use std::collections::HashMap;
-
 use self::address_condition::{
     AddressCondition,
     LineNumber,
@@ -37,6 +33,10 @@ impl Command {
             Delete => return Line { addr: line.addr, contents: String::new() }
         }
     }
+}
 
-    // fn from_args(args: Vec<String>) -> Option<Box<Self>>;
+impl From<Vec<String>> for Command {
+    fn from(s: Vec<String>) -> Self {
+        unimplemented!();
+    }
 }
