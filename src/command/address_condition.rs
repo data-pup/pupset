@@ -86,12 +86,15 @@ impl AddressCondition {
 
     fn parse_line_range(min_token: &String, max_token: &String)
         -> ParseResult {
+        // First, split the min and max tokens into a closure/address tuple.
         let (min_closure_s, min_addr_s) = min_token.split_at(1);
         let (max_closure_s, max_addr_s) = max_token.split_at(1);
+
         let min_inclusive = AddressCondition::is_min_inclusive(min_closure_s)?;
         let min = AddressCondition::parse_addr(min_addr_s.to_owned())?;
         let max_inclusive = AddressCondition::is_max_inclusive(max_closure_s)?;
         let max = AddressCondition::parse_addr(max_addr_s.to_owned())?;
+
         let cond = AddressCondition { vals: Values::Range {
             min, min_inclusive,
             max, max_inclusive,
@@ -132,7 +135,7 @@ impl AddressCondition {
 }
 
 #[cfg(test)]
-mod line_number_parse_tests {
+mod parse_tests {
     use command::{
         Address,
         AddressCondition,
@@ -141,46 +144,62 @@ mod line_number_parse_tests {
     use command::address_condition::Values;
 
     type ParseResult = Result<AddressCondition, AddressConditionParseError>;
-    struct LineNumberTest {
+    struct ConditionParseTest {
         inputs:          &'static [&'static str],
         expected:        ParseResult,
-        check_fn:        Option<fn(AddressCondition) -> bool>,
+        apply_checks: &'static [(Address, bool)],
         desc:            &'static str,
     }
 
-    const LINE_NUMBER_TESTS: &[LineNumberTest] = &[
-        LineNumberTest {
+    const TEST_CASES: &[ConditionParseTest] = &[
+        ConditionParseTest {
             inputs: &["[1]", "(1)", "1"],
             expected: Ok(AddressCondition {
                 vals: Values::LineNumber(1),
             }),
-            check_fn: Some(
-                |cond: AddressCondition| -> bool {
-                    [(0, false), (1, true), (2, false)].into_iter()
-                        .map(|&(addr, res)| (cond.applies(addr), res))
-                        .fold(true, |res, (actual, expected)| -> bool {
-                                res && (actual == expected)
-                        })
-                }
-            ),
+            apply_checks:  &[(0, false), (1, true), (2, false)],
             desc: "Single digit (0) inclusively enclosed",
+        },
+        ConditionParseTest {
+            inputs: &["[1..3]"],
+            expected: Ok(AddressCondition {
+                vals: Values::Range{
+                    min: 1, min_inclusive: true,
+                    max: 3, max_inclusive: true,
+                },
+            }),
+            apply_checks:  &[
+                (0, false), (1, true), (2, true), (3, true), (4, false)
+            ],
+            desc: "Range [1..3]",
         }
     ];
 
     #[test]
     fn line_numbers_parse_correctly() {
-        LINE_NUMBER_TESTS.iter().for_each(
-            |&LineNumberTest {    // Destructure each test case.
-                inputs, ref expected, check_fn, desc,
-            }: &LineNumberTest| { // Run the test for each input.
+        TEST_CASES.iter().for_each(
+            |&ConditionParseTest {    // Destructure each test case.
+                inputs, ref expected, apply_checks, desc,
+            }: &ConditionParseTest| { // Run the test for each input.
                 for arg in inputs.iter() {
                     let output = arg.parse::<AddressCondition>();
                     assert_eq!(output, *expected, "Test Failed: [{}]", desc);
                     if output.is_ok() { // Assert that the check function passes.
-                        let (cond, check) = (output.unwrap(), check_fn.unwrap());
-                        assert_eq!(check(cond), true);
+                        let cond: AddressCondition = output.unwrap();
+                        assert!(check_applies_results(cond, apply_checks),
+                            "Test Failed: [{}]", desc);
                     }
                 }
         });
+    }
+
+    fn check_applies_results(cond: AddressCondition,
+                             addrs_and_results: &[(Address, bool)])
+        -> bool {
+        addrs_and_results.iter()
+            .map(|&(addr, res)| (cond.applies(addr), res))
+            .fold(true, |res, (actual, expected)| -> bool {
+                    res && (actual == expected)
+            })
     }
 }
