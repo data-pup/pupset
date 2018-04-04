@@ -1,13 +1,9 @@
 pub mod address_condition;
 
 mod line;
-pub use command::line::Line;
+pub use self::line::Line;
 
-use self::address_condition::{
-    AddressCondition,
-    LineNumber,
-    parse_arg,
-};
+use self::address_condition::AddressCondition;
 
 pub type Address = u32;
 
