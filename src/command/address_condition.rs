@@ -1,3 +1,4 @@
+use std::str::FromStr;
 use command::Address;
 
 enum Values {
@@ -17,22 +18,29 @@ enum Values {
     },
 }
 
+#[derive(Debug)]
+pub enum ConditionParseErrors {
+    ArgEmpty,
+}
+
 pub struct AddressCondition {
     vals: Values,
 }
 
 impl AddressCondition {
     fn applies(&self, addr: Address) -> bool {
-        match values {
-            Value::LineNumber(n) => addr == n,
+        match self.vals {
+            Values::LineNumber(n) => addr == n,
             _ => unimplemented!(),
         }
     }
 }
 
-impl From<String> for AddressCondition {
-    fn from(s: String) -> Self {
-        AddressCondition { vals: Values::LineNumber(0) }
+impl FromStr for AddressCondition {
+    type Err = ConditionParseErrors;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(AddressCondition { vals: Values::LineNumber(0) })
     }
 }
 
@@ -42,7 +50,10 @@ mod condition_tests {
 
     #[test]
     fn it_works() {
-        assert!(true);
+        let input = "[0]";
+        let comm = input.parse::<AddressCondition>().unwrap();
+        assert_eq!(comm.applies(0), true);
+        assert_eq!(comm.applies(1), false);
     }
 
     struct CondParseTestCase {
