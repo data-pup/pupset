@@ -23,6 +23,7 @@ enum Values {
 pub enum AddressConditionParseError {
     ArgEmpty,
     InvalidArgument,
+    InvalidLineNumber,
     StringParseError,
 }
 
@@ -46,13 +47,13 @@ impl FromStr for AddressCondition {
     type Err = AddressConditionParseError;
 
     fn from_str(s: &str) -> ParseResult {
-        let cond_tokens: Result<Vec<String>, _> = s
-            .split("..")
+        let cond_tokens: Result<Vec<String>, _> =
+            s.split("..") // Split the given string apart.
             .map(String::from_str)
             .collect();
-        if cond_tokens.is_err() {
+        if cond_tokens.is_err() { // Return an error if parsing failed.
             return Err(AddressConditionParseError::StringParseError);
-        } else {
+        } else { // Otherwise, unwrap the result and form an address condition.
             let tokens = cond_tokens.unwrap();
             return match tokens.len() {
                 1 => AddressCondition::parse_line_number(&tokens[0]),
@@ -67,12 +68,21 @@ impl FromStr for AddressCondition {
 // FromStr private helper methods.
 impl AddressCondition {
     fn parse_line_number(arg: &String) -> ParseResult {
-        unimplemented!();
+        match AddressCondition::replace_closures(arg).parse::<Address>() {
+            Ok(addr) => Ok(AddressCondition {vals: Values::LineNumber(addr)} ),
+            Err(_)   => Err(AddressConditionParseError::InvalidLineNumber),
+        }
     }
 
     fn parse_line_range(min_token: &String, max_token: &String)
         -> ParseResult {
         unimplemented!();
+    }
+
+    fn replace_closures(s: &String) -> String {
+        return s
+            .replace("[", "").replace("(", "")
+            .replace("]", "").replace(")", "");
     }
 }
 
@@ -97,7 +107,7 @@ mod line_number_parse_tests {
         LineNumberTest {
             inputs: &["[1]", "(1)", "1"],
             expected: Ok(AddressCondition {
-                vals: Values::LineNumber(0),
+                vals: Values::LineNumber(1),
             }),
             check_fn: Some(
                 |cond: AddressCondition| -> bool {
