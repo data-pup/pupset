@@ -88,7 +88,7 @@ impl AddressCondition {
         -> ParseResult {
         // First, split the min and max tokens into a closure/address tuple.
         let (min_closure_s, min_addr_s) = min_token.split_at(1);
-        let (max_closure_s, max_addr_s) = max_token.split_at(1);
+        let (max_addr_s, max_closure_s) = max_token.split_at(1);
 
         let min_inclusive = AddressCondition::is_min_inclusive(min_closure_s)?;
         let min = AddressCondition::parse_addr(min_addr_s.to_owned())?;
@@ -161,7 +161,7 @@ mod parse_tests {
             desc: "Single digit (0) inclusively enclosed",
         },
         ConditionParseTest {
-            inputs: &["[1..3]"],
+            inputs: &["[29..30]"],
             expected: Ok(AddressCondition {
                 vals: Values::Range{
                     min: 1, min_inclusive: true,
@@ -169,9 +169,9 @@ mod parse_tests {
                 },
             }),
             apply_checks:  &[
-                (0, false), (1, true), (2, true), (3, true), (4, false)
+                (28, false), (29, true), (30, true), (31, false),
             ],
-            desc: "Range [1..3]",
+            desc: "Range [29..30]",
         }
     ];
 
