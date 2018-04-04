@@ -24,6 +24,7 @@ pub enum AddressConditionParseError {
     ArgEmpty,
     InvalidArgument,
     InvalidLineNumber,
+    InvalidRangeClosure,
     StringParseError,
 }
 
@@ -68,21 +69,56 @@ impl FromStr for AddressCondition {
 // FromStr private helper methods.
 impl AddressCondition {
     fn parse_line_number(arg: &String) -> ParseResult {
-        match AddressCondition::replace_closures(arg).parse::<Address>() {
-            Ok(addr) => Ok(AddressCondition {vals: Values::LineNumber(addr)} ),
-            Err(_)   => Err(AddressConditionParseError::InvalidLineNumber),
-        }
+        let treated_arg: String = AddressCondition::replace_closures(arg);
+        let addr: Address = AddressCondition::parse_addr(treated_arg)?;
+        let cond = AddressCondition {vals: Values::LineNumber(addr)};
+        return Ok(cond);
     }
 
     fn parse_line_range(min_token: &String, max_token: &String)
         -> ParseResult {
-        unimplemented!();
+        let (min_closure_s, min_addr_s) = min_token.split_at(1);
+        let (max_closure_s, max_addr_s) = max_token.split_at(1);
+        let min_inclusive = AddressCondition::is_min_inclusive(min_closure_s)?;
+        let min = AddressCondition::parse_addr(min_addr_s.to_owned())?;
+        let max_inclusive = AddressCondition::is_max_inclusive(max_closure_s)?;
+        let max = AddressCondition::parse_addr(max_addr_s.to_owned())?;
+        let cond = AddressCondition { vals: Values::Range {
+            min, min_inclusive,
+            max, max_inclusive,
+        }};
+        return Ok(cond);
+    }
+
+    fn parse_addr(s: String) -> Result<Address, AddressConditionParseError> {
+        match s.parse::<Address>() {
+            Ok(addr) => Ok(addr),
+            Err(_)   => Err(AddressConditionParseError::InvalidLineNumber),
+        }
     }
 
     fn replace_closures(s: &String) -> String {
         return s
             .replace("[", "").replace("(", "")
             .replace("]", "").replace(")", "");
+    }
+
+    fn is_min_inclusive(closure: &str)
+        -> Result<bool, AddressConditionParseError> {
+        match closure {
+            s if s == "[" => Ok(true),
+            s if s == "(" => Ok(false),
+            _ => Err(AddressConditionParseError::InvalidRangeClosure),
+        }
+    }
+
+    fn is_max_inclusive(closure: &str)
+        -> Result<bool, AddressConditionParseError> {
+        match closure {
+            s if s == "]" => Ok(true),
+            s if s == ")" => Ok(false),
+            _ => Err(AddressConditionParseError::InvalidRangeClosure),
+        }
     }
 }
 
