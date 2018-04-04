@@ -156,10 +156,11 @@ mod line_number_parse_tests {
             }),
             check_fn: Some(
                 |cond: AddressCondition| -> bool {
-                    [false, true, false]
-                        .into_iter().enumerate()
-                        .map(|(i, res)| (cond.applies(i as Address), res))
-                        .fold(true, |res, (actual, expected)| res && (actual == *expected))
+                    [(0, false), (1, true), (2, false)].into_iter()
+                        .map(|&(addr, res)| (cond.applies(addr), res))
+                        .fold(true, |res, (actual, expected)| -> bool {
+                                res && (actual == expected)
+                        })
                 }
             ),
             desc: "Single digit (0) inclusively enclosed",
