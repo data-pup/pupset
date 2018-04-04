@@ -1,7 +1,12 @@
 mod address_condition;
 mod line;
 
-use self::address_condition::AddressCondition;
+pub use self::address_condition::{
+    AddressCondition,
+    AddressConditionParseError,
+    Values,
+};
+
 pub use self::line::Line;
 
 

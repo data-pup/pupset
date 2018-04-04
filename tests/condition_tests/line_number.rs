@@ -1,9 +1,9 @@
-use command::address_condition::*;
+// use command::address_condition::*;
 
-#[test]
-fn it_works() {
+// #[test]
+// fn it_works() {
 
-}
+// }
 
 // #[test]
 // fn min_works() {

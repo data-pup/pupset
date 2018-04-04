@@ -1,7 +1,7 @@
 use std::str::FromStr;
 use command::Address;
 
-enum Values {
+pub enum Values {
     LineNumber(Address),
     Range {
         min:           Address,
@@ -19,7 +19,7 @@ enum Values {
 }
 
 #[derive(Debug)]
-pub enum ConditionParseErrors {
+pub enum AddressConditionParseError {
     ArgEmpty,
 }
 
@@ -37,22 +37,9 @@ impl AddressCondition {
 }
 
 impl FromStr for AddressCondition {
-    type Err = ConditionParseErrors;
+    type Err = AddressConditionParseError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         Ok(AddressCondition { vals: Values::LineNumber(0) })
-    }
-}
-
-#[cfg(test)]
-mod condition_tests {
-    use command::address_condition::*;
-
-    #[test]
-    fn it_works() {
-        let input = "[0]";
-        let comm = input.parse::<AddressCondition>().unwrap();
-        assert_eq!(comm.applies(0), true);
-        assert_eq!(comm.applies(1), false);
     }
 }
