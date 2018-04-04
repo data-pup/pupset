@@ -11,10 +11,19 @@ pub use self::line_range::LineRange;
 pub use self::parse::parse_arg;
 
 pub struct AddressCondition {
+    min:  Address,
+    max:  Option<Address>,
+    step: Option<Address>,
 }
 
 impl AddressCondition {
     fn applies(&self, current_line: Address) -> bool {
+        unimplemented!();
+    }
+}
+
+impl From<String> for AddressCondition {
+    fn from(s: String) -> Self {
         unimplemented!();
     }
 }
