@@ -16,14 +16,16 @@ use self::address_condition::{
 
 pub type Address = u32;
 
+
+/// Command structure.
 pub trait Command {
     // fn from_args(args: Vec<String>) -> Option<Box<Self>>;
     fn should_run(&self, curr_line: Address) -> bool;
     fn run(&self, line: Line) -> Line;
 }
 
-pub struct CommandInfo {
-    argc: &'static [usize],
-    name: &'static str,
-}
-
+// ----------------------------------------------------------------------------
+// pub struct CommandInfo {
+//     argc: &'static [usize],
+//     name: &'static str,
+// }

@@ -1,10 +1,5 @@
-use command::{Address, Command, CommandInfo, Line};
+use command::{Address, Command, Line};
 use command::address_condition::Condition;
-
-const INFO: CommandInfo = CommandInfo {
-    argc: &[1, 2],
-    name: "delete",
-};
 
 struct Delete {
     cond: Option<Box<Condition>>,
