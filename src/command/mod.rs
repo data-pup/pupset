@@ -22,9 +22,8 @@ pub enum CommandType {
     Print,
 }
 
-/// Command structure.
 pub struct Command {
-    command_type: CommandType,
+    comm: CommandType,
 }
 
 impl Command {
@@ -34,9 +33,9 @@ impl Command {
 
     pub fn run(&self, line: Line) -> Line {
         if !self.should_run(line.addr) { return line; }
-        match &self.command_type {
+        match &self.comm {
             Print => unimplemented!(),
-            Delete => unimplemented!(),
+            Delete => return Line { addr: line.addr, contents: String::new() }
         }
     }
 
