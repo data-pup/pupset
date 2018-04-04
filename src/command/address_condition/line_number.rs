@@ -12,39 +12,39 @@ impl LineNumber {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use command::address_condition::line_number::*;
+// #[cfg(test)]
+// mod tests {
+//     use command::address_condition::line_number::*;
 
-    struct TestCase {
-        addresses: Vec<Address>,
-        conditions: Vec<LineNumber>,
-        expected_results: Vec<Vec<bool>>,
-    }
+    // struct TestCase {
+    //     addresses: Vec<Address>,
+    //     conditions: Vec<LineNumber>,
+    //     expected_results: Vec<Vec<bool>>,
+    // }
 
-    /// Create a vector of LineNumber conditions for lines 0, 5, and 10.
-    fn init_test_objects() -> TestCase {
-        let addresses: Vec<Address> = (0..11).collect();
-        let conditions = vec![0, 5, 10]
-            .iter()
-            .map(|n: &Address| LineNumber::new(*n))
-            .collect();
-        let expected_results = vec![
-            //  [0,     5,     10   ]  <- Expected condition results.
-            vec![true,  false, false], // Line 0
-            vec![false, false, false], // Line 1
-            vec![false, false, false], // Line 2
-            vec![false, false, false], // Line 3
-            vec![false, false, false], // Line 4
-            vec![false, true,  false], // Line 5
-            vec![false, false, false], // Line 6
-            vec![false, false, false], // Line 7
-            vec![false, false, false], // Line 8
-            vec![false, false, false], // Line 9
-            vec![false, false, true ], // Line 10
-        ];
-        TestCase { addresses, conditions, expected_results }
-    }
+    // /// Create a vector of LineNumber conditions for lines 0, 5, and 10.
+    // fn init_test_objects() -> TestCase {
+    //     let addresses: Vec<Address> = (0..11).collect();
+    //     let conditions = vec![0, 5, 10]
+    //         .iter()
+    //         .map(|n: &Address| LineNumber::new(*n))
+    //         .collect();
+    //     let expected_results = vec![
+    //         //  [0,     5,     10   ]  <- Expected condition results.
+    //         vec![true,  false, false], // Line 0
+    //         vec![false, false, false], // Line 1
+    //         vec![false, false, false], // Line 2
+    //         vec![false, false, false], // Line 3
+    //         vec![false, false, false], // Line 4
+    //         vec![false, true,  false], // Line 5
+    //         vec![false, false, false], // Line 6
+    //         vec![false, false, false], // Line 7
+    //         vec![false, false, false], // Line 8
+    //         vec![false, false, false], // Line 9
+    //         vec![false, false, true ], // Line 10
+    //     ];
+    //     TestCase { addresses, conditions, expected_results }
+    // }
 
     // #[test]
     // fn line_number_tests() {
@@ -69,4 +69,4 @@ mod tests {
     //         i += 1;
     //     }
     // }
-}
+// }

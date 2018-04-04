@@ -167,40 +167,40 @@ mod parse_tests {
     //     }
     // }
 
-    fn init_test_cases() -> Vec<ParseTestCase> {
-        vec![
-            ParseTestCase {
-                input_string: String::from("[1]"),
-                expected_result: Ok(Box::new(LineNumber::new(1))),
-                test_description: "Single digit inclusively enclosed.",
-            },
-            ParseTestCase {
-                input_string: String::from("[11]"),
-                expected_result: Ok(Box::new(LineNumber::new(11))),
-                test_description: "Double digit inclusively enclosed.",
-            },
-            ParseTestCase {
-                input_string: String::from(""),
-                expected_result: Err(ArgParseError::ArgEmpty),
-                test_description: "Empty argument should cause ArgEmpty error.",
-            },
-            ParseTestCase {
-                input_string: String::from("[]"),
-                expected_result: Err(ArgParseError::InvalidAddressNumber),
-                test_description: "Empty [] enclosure should cause error.",
-            },
-            ParseTestCase {
-                input_string: String::from("()"),
-                expected_result: Err(ArgParseError::InvalidAddressNumber),
-                test_description: "Empty () enclosure should cause error.",
-            },
-            ParseTestCase {
-                input_string: String::from("(1)"),
-                expected_result: Err(ArgParseError::InvalidClosuresError),
-                test_description: "Single address must be enclosed inclusively.",
-            },
-        ]
-    }
+    // fn init_test_cases() -> Vec<ParseTestCase> {
+    //     vec![
+    //         ParseTestCase {
+    //             input_string: String::from("[1]"),
+    //             expected_result: Ok(Box::new(LineNumber::new(1))),
+    //             test_description: "Single digit inclusively enclosed.",
+    //         },
+    //         ParseTestCase {
+    //             input_string: String::from("[11]"),
+    //             expected_result: Ok(Box::new(LineNumber::new(11))),
+    //             test_description: "Double digit inclusively enclosed.",
+    //         },
+    //         ParseTestCase {
+    //             input_string: String::from(""),
+    //             expected_result: Err(ArgParseError::ArgEmpty),
+    //             test_description: "Empty argument should cause ArgEmpty error.",
+    //         },
+    //         ParseTestCase {
+    //             input_string: String::from("[]"),
+    //             expected_result: Err(ArgParseError::InvalidAddressNumber),
+    //             test_description: "Empty [] enclosure should cause error.",
+    //         },
+    //         ParseTestCase {
+    //             input_string: String::from("()"),
+    //             expected_result: Err(ArgParseError::InvalidAddressNumber),
+    //             test_description: "Empty () enclosure should cause error.",
+    //         },
+    //         ParseTestCase {
+    //             input_string: String::from("(1)"),
+    //             expected_result: Err(ArgParseError::InvalidClosuresError),
+    //             test_description: "Single address must be enclosed inclusively.",
+    //         },
+    //     ]
+    // }
 
     // struct ParseTestCase {
     //     input_string:     String,
