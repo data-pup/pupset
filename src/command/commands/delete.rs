@@ -1,58 +1,55 @@
 use command::{Address, Command, Line};
 use command::address_condition::Condition;
 
-struct Delete {
-    cond: Option<Box<Condition>>,
-}
+// struct Delete {
+//     cond: Option<Box<Condition>>,
 
-impl Command for Delete {
+//     fn should_run(&self, curr_line: Address) -> bool {
+//         match self.cond {
+//             Some(ref cond) => cond.applies(curr_line),
+//             None => true,
+//         }
+//     }
 
-    fn should_run(&self, curr_line: Address) -> bool {
-        match self.cond {
-            Some(ref cond) => cond.applies(curr_line),
-            None => true,
-        }
-    }
-
-    fn run(&self, line: Line) -> Line {
-        let Line { contents, addr } = line;
-        match self.should_run(addr) {
-            true => Line { contents: String::new(), addr },
-            false => Line { contents, addr },
-        }
-    }
-}
+//     fn run(&self, line: Line) -> Line {
+//         let Line { contents, addr } = line;
+//         match self.should_run(addr) {
+//             true => Line { contents: String::new(), addr },
+//             false => Line { contents, addr },
+//         }
+//     }
+// }
 
 #[cfg(test)]
 mod delete_tests {
     use command::{Address, Command, Line};
-    use command::commands::delete::Delete;
+    // use command::commands::delete::Delete;
     use command::address_condition::{
         Condition,
         LineNumber,
     };
 
-    #[test]
-    fn delete_works() {
-        for test_case in init_test_cases().iter() {
-            let &DeleteTestCase {
-                address, ref input, ref expected_output, test_desc,
-            } = test_case;
-            let comm = match address {
-                Some(addr) => Delete {
-                    cond: Some(Box::new(LineNumber::new(addr)))
-                },
-                None => Delete { cond: None },
-            };
-            let lines:          Vec<Line> = create_lines_vec(input);
-            let expected_lines: Vec<Line> = create_lines_vec(expected_output);
-            let actual_lines:   Vec<Line> = lines.into_iter()
-                .map(|l| comm.run(l))
-                .collect();
-            assert_eq!(actual_lines, expected_lines,
-                "Test Failed: {}", test_desc);
-        }
-    }
+    // #[test]
+    // fn delete_works() {
+    //     for test_case in init_test_cases().iter() {
+    //         let &DeleteTestCase {
+    //             address, ref input, ref expected_output, test_desc,
+    //         } = test_case;
+    //         let comm = match address {
+    //             Some(addr) => Delete {
+    //                 cond: Some(Box::new(LineNumber::new(addr)))
+    //             },
+    //             None => Delete { cond: None },
+    //         };
+    //         let lines:          Vec<Line> = create_lines_vec(input);
+    //         let expected_lines: Vec<Line> = create_lines_vec(expected_output);
+    //         let actual_lines:   Vec<Line> = lines.into_iter()
+    //             .map(|l| comm.run(l))
+    //             .collect();
+    //         assert_eq!(actual_lines, expected_lines,
+    //             "Test Failed: {}", test_desc);
+    //     }
+    // }
 
     fn create_lines_vec(input: &Vec<&'static str>) -> Vec<Line> {
         input.iter()

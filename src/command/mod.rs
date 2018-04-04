@@ -17,11 +17,30 @@ use self::address_condition::{
 pub type Address = u32;
 
 
+pub enum CommandType {
+    Delete,
+    Print,
+}
+
 /// Command structure.
-pub trait Command {
+pub struct Command {
+    command_type: CommandType,
+}
+
+impl Command {
+    fn should_run(&self, curr_line: Address) -> bool {
+        unimplemented!();
+    }
+
+    pub fn run(&self, line: Line) -> Line {
+        if !self.should_run(line.addr) { return line; }
+        match &self.command_type {
+            Print => unimplemented!(),
+            Delete => unimplemented!(),
+        }
+    }
+
     // fn from_args(args: Vec<String>) -> Option<Box<Self>>;
-    fn should_run(&self, curr_line: Address) -> bool;
-    fn run(&self, line: Line) -> Line;
 }
 
 // ----------------------------------------------------------------------------
