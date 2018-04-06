@@ -9,7 +9,7 @@ pub use self::line::Line;
 
 pub type Address = u32;
 
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum CommandType {
     Delete,
     Print,
@@ -59,13 +59,16 @@ mod command_tests {
     use command::*;
 
     #[test]
-    fn placeholder_command_test() {
-        let delete_args = vec![String::from("delete"), String::from("[1]")];
-        let delete_comm = Command::from(delete_args);
-        assert_eq!(delete_comm, Command { comm: CommandType::Delete, cond: None });
+    fn command_keywords_identified_correctly() {
+        let keywords_and_types = &[ // Keywords and expected command types.
+            ("delete", CommandType::Delete),
+            ("print" , CommandType::Print ),
+        ];
 
-        let print_args = vec![String::from("print"), String::from("[1]")];
-        let print_comm = Command::from(print_args);
-        assert_eq!(print_comm, Command { comm: CommandType::Print, cond: None });
+        for &(keyword, expected_type) in keywords_and_types.iter() {
+            let comm_args = vec![keyword.to_string(), String::from("(1)")];
+            let comm = Command::from(comm_args);
+            assert_eq!(comm, Command { comm: expected_type, cond: None });
+        }
     }
 }
