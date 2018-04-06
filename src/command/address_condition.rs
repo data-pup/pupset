@@ -100,11 +100,9 @@ impl AddressCondition {
         let max_inclusive = AddressCondition::is_max_inclusive(max_closure_s)?;
         let max = AddressCondition::parse_addr(max_addr_s.to_owned())?;
 
-        let cond = AddressCondition { vals: Values::Range {
-            min, min_inclusive,
-            max, max_inclusive,
-        }};
-        return Ok(cond);
+        Ok(AddressCondition { // Return an address condition for the range.
+            vals: Values::Range { min, min_inclusive, max, max_inclusive }
+        })
     }
 
     /// Parse a String into an Address, or return an InvalidLineNumber error.
@@ -174,6 +172,12 @@ mod parse_tests {
             apply_checks:  &[(28, false), (29, true), (30, true), (31, false)],
             desc:          "Line ranges with inclusive/exclusive bounds",
         },
+        ConditionParseTest { // Test a simple step range condition.
+            inputs:        &["[0..2..6)"],
+            apply_checks:  &[(0, true), (1, false), (2, true), (3, false),
+                             (4, true), (5, false), (6, false)],
+            desc:          "Simple step range condition [0..2..6)",
+        }
     ];
 
     #[test]
