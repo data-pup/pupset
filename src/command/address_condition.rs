@@ -84,12 +84,17 @@ impl AddressCondition {
         return Ok(cond);
     }
 
-    fn parse_line_range(min_token: &String, max_token: &String)
-        -> ParseResult {
-        // First, split the min and max tokens into a closure/address tuple.
-        let (min_closure_s, min_addr_s) = min_token.split_at(1);
-        let (max_addr_s, max_closure_s) = max_token.split_at(1);
+    fn parse_line_range(min_token: &String, max_token: &String) -> ParseResult {
+        if min_token.len() < 2 || max_token.len() < 2 { // Check token lengths.
+            return Err(AddressConditionParseError::InvalidLineNumber);
+        }
 
+        // First, split the min and max tokens into a closure/address tuple.
+        let (min_split_i, max_split_i) = (1, max_token.len() - 1);
+        let (min_closure_s, min_addr_s) = min_token.split_at(min_split_i);
+        let (max_addr_s, max_closure_s) = max_token.split_at(max_split_i);
+
+        // Parse the upper and lower bounds' closures and addresses.
         let min_inclusive = AddressCondition::is_min_inclusive(min_closure_s)?;
         let min = AddressCondition::parse_addr(min_addr_s.to_owned())?;
         let max_inclusive = AddressCondition::is_max_inclusive(max_closure_s)?;
@@ -102,6 +107,7 @@ impl AddressCondition {
         return Ok(cond);
     }
 
+    /// Parse a String into an Address, or return an InvalidLineNumber error.
     fn parse_addr(s: String) -> Result<Address, AddressConditionParseError> {
         match s.parse::<Address>() {
             Ok(addr) => Ok(addr),
@@ -109,12 +115,16 @@ impl AddressCondition {
         }
     }
 
+    /// Remove the closures in a given String value.
     fn replace_closures(s: &String) -> String {
-        return s
+        return s // FIXUP? Not sure if there is a way to replace multiple chars.
             .replace("[", "").replace("(", "")
             .replace("]", "").replace(")", "");
     }
 
+    /// Return true/false based on whether the lower bound closure is or is not
+    /// inclusive. Returns an InvalidRangeClosure error if an unrecognized
+    /// closure was given.
     fn is_min_inclusive(closure: &str)
         -> Result<bool, AddressConditionParseError> {
         match closure {
@@ -124,6 +134,9 @@ impl AddressCondition {
         }
     }
 
+    /// Return true/false based on whether the upper bound closure is or is not
+    /// inclusive. Returns an InvalidRangeClosure error if an unrecognized
+    /// closure was given.
     fn is_max_inclusive(closure: &str)
         -> Result<bool, AddressConditionParseError> {
         match closure {
@@ -152,20 +165,20 @@ mod parse_tests {
     }
 
     const TEST_CASES: &[ConditionParseTest] = &[
-        ConditionParseTest {
-            inputs: &["[1]", "(1)", "1"],
+        ConditionParseTest { // Test that a line number condition works.
+            inputs: &["[10]", "(10)", "10"],
             expected: Ok(AddressCondition {
-                vals: Values::LineNumber(1),
+                vals: Values::LineNumber(10),
             }),
-            apply_checks:  &[(0, false), (1, true), (2, false)],
+            apply_checks:  &[(9, false), (10, true), (11, false)],
             desc: "Single digit (0) inclusively enclosed",
         },
-        ConditionParseTest {
+        ConditionParseTest { // Test that a line range condition works.
             inputs: &["[29..30]"],
             expected: Ok(AddressCondition {
                 vals: Values::Range{
-                    min: 1, min_inclusive: true,
-                    max: 3, max_inclusive: true,
+                    min: 29, min_inclusive: true,
+                    max: 30, max_inclusive: true,
                 },
             }),
             apply_checks:  &[
@@ -191,6 +204,14 @@ mod parse_tests {
                     }
                 }
         });
+    }
+
+    #[test]
+    fn temp() {
+        let s = "hello";
+        let (a, b) = s.split_at(s.len() - 1);
+        assert_eq!(a, "hell");
+        assert_eq!(b, "o");
     }
 
     fn check_applies_results(cond: AddressCondition,
