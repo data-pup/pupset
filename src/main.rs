@@ -1,3 +1,5 @@
+#![feature(try_from)]
+
 mod args;
 mod command;
 mod config;

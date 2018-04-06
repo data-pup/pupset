@@ -1,3 +1,5 @@
+use std::convert::TryFrom;
+
 mod address_condition;
 pub use self::address_condition::{
     AddressCondition,
@@ -6,6 +8,9 @@ pub use self::address_condition::{
 
 mod line;
 pub use self::line::Line;
+
+mod parse_error;
+pub use self::parse_error::CommandParseError;
 
 pub type Address = u32;
 
@@ -43,14 +48,18 @@ impl Command {
 }
 
 // Creates a command object from a vector of strings. (In progress)
-impl From<Vec<String>> for Command {
-    fn from(s: Vec<String>) -> Self {
-        let comm: CommandType = match s[0].as_ref() {
+impl TryFrom<Vec<String>> for Command {
+    type Error = CommandParseError;
+
+    fn try_from(args: Vec<String>) -> Result<Self, Self::Error> {
+
+        if args.is_empty() { return Err(CommandParseError::EmptyCommand); }
+        let comm: CommandType = match args[0].as_ref() {
             "delete" => CommandType::Delete,
             "print"  => CommandType::Print,
             _        => unimplemented!(),
         };
-        Self { comm, cond: None }
+        return Ok(Self { comm, cond: None });
     }
 }
 
@@ -67,7 +76,7 @@ mod command_tests {
 
         for &(keyword, expected_type) in keywords_and_types.iter() {
             let comm_args = vec![keyword.to_string(), String::from("(1)")];
-            let comm = Command::from(comm_args);
+            let comm = Command::try_from(comm_args).unwrap();
             assert_eq!(comm, Command { comm: expected_type, cond: None });
         }
     }
