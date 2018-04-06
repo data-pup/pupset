@@ -185,6 +185,19 @@ mod parse_tests {
                 (28, false), (29, true), (30, true), (31, false),
             ],
             desc: "Range [29..30]",
+        },
+        ConditionParseTest { // Test that a line range condition works.
+            inputs: &["(1..4)"],
+            expected: Ok(AddressCondition {
+                vals: Values::Range{
+                    min: 1, min_inclusive: false,
+                    max: 4, max_inclusive: false,
+                },
+            }),
+            apply_checks:  &[
+                (0, false), (1, false), (2, true), (3, true), (4, false),
+            ],
+            desc: "Range (1..4)",
         }
     ];
 
