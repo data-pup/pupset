@@ -68,12 +68,11 @@ impl FromStr for AddressCondition {
         if cond_tokens.is_err() { // Return an error if parsing failed.
             return Err(AddressConditionParseError::StringParseError);
         } else { // Otherwise, unwrap the result and form an address condition.
-            let tokens = cond_tokens.unwrap();
+            let mut tokens = cond_tokens.unwrap();
             return match tokens.len() {
                 1 => AddressCondition::parse_line_number(&tokens[0]),
                 2 => AddressCondition::parse_line_range(&tokens[0], &tokens[1]),
-                3 => AddressCondition::parse_step_range(
-                                            &tokens[0], &tokens[1], &tokens[2]),
+                3 => AddressCondition::parse_step_range(&mut tokens),
                 _ => Err(AddressConditionParseError::InvalidArgument),
             }
         }
@@ -108,15 +107,29 @@ impl AddressCondition {
 
     /// Parse a step range, given the upper and lower bounds tokens, as well as
     /// the step size token. Returns a step range condition, or an error.
-    fn parse_step_range(min_token: &String, step_token: &String,
-                        max_token: &String) -> ParseResult {
-        unimplemented!();
+    fn parse_step_range(tokens: &mut Vec<String>) -> ParseResult {
+        let max_token = tokens.pop().unwrap();
+        let step_token = tokens.pop().unwrap();
+        let min_token = tokens.pop().unwrap();
+
+        let (min, min_inclusive) = AddressCondition::parse_min_token(&min_token)?;
+        let (max, max_inclusive) = AddressCondition::parse_max_token(&max_token)?;
+        let step = AddressCondition::parse_addr(step_token)?;
+
+        return Ok(AddressCondition {
+            vals: Values::StepRange {
+                min, min_inclusive,
+                max, max_inclusive,
+                step,
+            }
+        });
     }
 }
 
 impl AddressCondition {
     /// Parse a String into an Address, or return an InvalidLineNumber error.
     fn parse_addr(s: String) -> Result<Address, AddressConditionParseError> {
+
         match s.parse::<Address>() {
             Ok(addr) => Ok(addr),
             Err(_)   => Err(AddressConditionParseError::InvalidLineNumber),
@@ -216,6 +229,12 @@ mod parse_tests {
                              (4, true), (5, false), (6, false)],
             desc:          "Simple step range condition [0..2..6)",
         },
+        ConditionParseTest { // Test a simple step range condition.
+            inputs:        &["[0..2..6]"],
+            apply_checks:  &[(0, true), (1, false), (2, true), (3, false),
+                             (4, true), (5, false), (6, true)],
+            desc:          "Simple step range condition [0..2..6)",
+        },
     ];
 
     #[test]
@@ -226,11 +245,9 @@ mod parse_tests {
             }: &ConditionParseTest| {   // Run the test for each input.
                 for arg in inputs.iter() {
                     let output = arg.parse::<AddressCondition>();
-                    if output.is_ok() { // Assert the check function passes.
-                        let cond: AddressCondition = output.unwrap();
-                        assert!(check_applies_results(cond, apply_checks),
-                            "Test Failed: [{}]", desc);
-                    }
+                    let cond: AddressCondition = output.unwrap();
+                    assert!(check_applies_results(cond, apply_checks),
+                        "Test Failed: [{}]", desc);
                 }
         });
     }
