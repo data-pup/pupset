@@ -68,7 +68,8 @@ impl FromStr for AddressCondition {
             return match tokens.len() {
                 1 => AddressCondition::parse_line_number(&tokens[0]),
                 2 => AddressCondition::parse_line_range(&tokens[0], &tokens[1]),
-                3 => unimplemented!(),
+                3 => AddressCondition::parse_step_range(
+                                            &tokens[0], &tokens[1], &tokens[2]),
                 _ => Err(AddressConditionParseError::InvalidArgument),
             }
         }
@@ -77,6 +78,7 @@ impl FromStr for AddressCondition {
 
 // FromStr private helper methods.
 impl AddressCondition {
+    /// Parse a line number condition, and return the result.
     fn parse_line_number(arg: &String) -> ParseResult {
         let treated_arg: String = AddressCondition::replace_closures(arg);
         let addr: Address = AddressCondition::parse_addr(treated_arg)?;
@@ -84,6 +86,9 @@ impl AddressCondition {
         return Ok(cond);
     }
 
+    /// This function will parse and return a line range condition, given the
+    /// minimum and maximum tokens. If an invalid closure or address is
+    /// encountered, returns an error.
     fn parse_line_range(min_token: &String, max_token: &String) -> ParseResult {
         if min_token.len() < 2 || max_token.len() < 2 { // Check token lengths.
             return Err(AddressConditionParseError::InvalidLineNumber);
@@ -103,6 +108,13 @@ impl AddressCondition {
         Ok(AddressCondition { // Return an address condition for the range.
             vals: Values::Range { min, min_inclusive, max, max_inclusive }
         })
+    }
+
+    /// Parse a step range, given the upper and lower bounds tokens, as well as
+    /// the step size token. Returns a step range condition, or an error.
+    fn parse_step_range(min_token: &String, step_token: &String,
+                        max_token: &String) -> ParseResult {
+        unimplemented!();
     }
 
     /// Parse a String into an Address, or return an InvalidLineNumber error.
