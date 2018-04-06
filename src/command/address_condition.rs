@@ -120,7 +120,9 @@ impl AddressCondition {
                         max_token: &String) -> ParseResult {
         unimplemented!();
     }
+}
 
+impl AddressCondition {
     /// Parse a String into an Address, or return an InvalidLineNumber error.
     fn parse_addr(s: String) -> Result<Address, AddressConditionParseError> {
         match s.parse::<Address>() {
