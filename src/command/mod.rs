@@ -56,7 +56,7 @@ impl TryFrom<Vec<String>> for Command {
         match args[0].as_ref() {
             "delete" => Ok(Self { comm: CommandType::Delete, cond: None }),
             "print"  => Ok(Self { comm: CommandType::Print,  cond: None }),
-            _        => unimplemented!(),
+            _        => Err(CommandParseError::InvalidCommandName),
         }
     }
 }
@@ -64,6 +64,21 @@ impl TryFrom<Vec<String>> for Command {
 #[cfg(test)]
 mod command_tests {
     use command::*;
+
+    #[test]
+    fn invalid_command_name_fails() {
+        let invalid_names = &["incorrect", "names", "test"];
+        for invalid_comm_name in invalid_names.iter() {
+            let comm_args = vec![
+                invalid_comm_name.to_string(),
+                String::from("(1)")
+            ];
+            let comm = Command::try_from(comm_args);
+            assert!(comm.is_err());
+            let comm_err = comm.unwrap_err();
+            assert_eq!(comm_err, CommandParseError::InvalidCommandName);
+        }
+    }
 
     #[test]
     fn command_keywords_identified_correctly() {
