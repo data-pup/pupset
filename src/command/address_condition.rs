@@ -213,14 +213,6 @@ mod parse_tests {
         });
     }
 
-    #[test]
-    fn temp() {
-        let s = "hello";
-        let (a, b) = s.split_at(s.len() - 1);
-        assert_eq!(a, "hell");
-        assert_eq!(b, "o");
-    }
-
     fn check_applies_results(cond: AddressCondition,
                              addrs_and_results: &[(Address, bool)])
         -> bool {
