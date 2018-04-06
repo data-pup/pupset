@@ -52,14 +52,12 @@ impl TryFrom<Vec<String>> for Command {
     type Error = CommandParseError;
 
     fn try_from(args: Vec<String>) -> Result<Self, Self::Error> {
-
         if args.is_empty() { return Err(CommandParseError::EmptyCommand); }
-        let comm: CommandType = match args[0].as_ref() {
-            "delete" => CommandType::Delete,
-            "print"  => CommandType::Print,
+        match args[0].as_ref() {
+            "delete" => Ok(Self { comm: CommandType::Delete, cond: None }),
+            "print"  => Ok(Self { comm: CommandType::Print,  cond: None }),
             _        => unimplemented!(),
-        };
-        return Ok(Self { comm, cond: None });
+        }
     }
 }
 
