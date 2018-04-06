@@ -158,59 +158,33 @@ mod parse_tests {
 
     type ParseResult = Result<AddressCondition, AddressConditionParseError>;
     struct ConditionParseTest {
-        inputs:          &'static [&'static str],
-        expected:        ParseResult,
+        inputs:       &'static [&'static str],
         apply_checks: &'static [(Address, bool)],
-        desc:            &'static str,
+        desc:         &'static str,
     }
 
     const TEST_CASES: &[ConditionParseTest] = &[
         ConditionParseTest { // Test that a line number condition works.
-            inputs: &["[10]", "(10)", "10"],
-            expected: Ok(AddressCondition {
-                vals: Values::LineNumber(10),
-            }),
+            inputs:        &["[10]", "(10)", "10"],
             apply_checks:  &[(9, false), (10, true), (11, false)],
-            desc: "Single digit (0) inclusively enclosed",
+            desc:          "Single digit (0) inclusively enclosed",
         },
         ConditionParseTest { // Test that a line range condition works.
-            inputs: &["[29..30]"],
-            expected: Ok(AddressCondition {
-                vals: Values::Range{
-                    min: 29, min_inclusive: true,
-                    max: 30, max_inclusive: true,
-                },
-            }),
-            apply_checks:  &[
-                (28, false), (29, true), (30, true), (31, false),
-            ],
-            desc: "Range [29..30]",
+            inputs:        &["[29..30]", "(28..31)", "[29..31)", "(28..30]"],
+            apply_checks:  &[(28, false), (29, true), (30, true), (31, false)],
+            desc:          "Line ranges with inclusive/exclusive bounds",
         },
-        ConditionParseTest { // Test that a line range condition works.
-            inputs: &["(1..4)"],
-            expected: Ok(AddressCondition {
-                vals: Values::Range{
-                    min: 1, min_inclusive: false,
-                    max: 4, max_inclusive: false,
-                },
-            }),
-            apply_checks:  &[
-                (0, false), (1, false), (2, true), (3, true), (4, false),
-            ],
-            desc: "Range (1..4)",
-        }
     ];
 
     #[test]
     fn line_numbers_parse_correctly() {
         TEST_CASES.iter().for_each(
-            |&ConditionParseTest {    // Destructure each test case.
-                inputs, ref expected, apply_checks, desc,
-            }: &ConditionParseTest| { // Run the test for each input.
+            |&ConditionParseTest {      // Destructure each test case.
+                inputs, apply_checks, desc,
+            }: &ConditionParseTest| {   // Run the test for each input.
                 for arg in inputs.iter() {
                     let output = arg.parse::<AddressCondition>();
-                    assert_eq!(output, *expected, "Test Failed: [{}]", desc);
-                    if output.is_ok() { // Assert that the check function passes.
+                    if output.is_ok() { // Assert the check function passes.
                         let cond: AddressCondition = output.unwrap();
                         assert!(check_applies_results(cond, apply_checks),
                             "Test Failed: [{}]", desc);
