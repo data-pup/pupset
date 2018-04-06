@@ -44,8 +44,12 @@ impl AddressCondition {
             Values::Range { min, min_inclusive, max, max_inclusive } => {
                 AddressCondition::in_lower_bound(addr, min, min_inclusive)
                 && AddressCondition::in_upper_bound(addr, max, max_inclusive)
-            }
-            _ => unimplemented!(),
+            },
+            Values::StepRange { min, min_inclusive, max, max_inclusive, step } => {
+                AddressCondition::in_lower_bound(addr, min, min_inclusive)
+                && AddressCondition::in_upper_bound(addr, max, max_inclusive)
+                && AddressCondition::in_step(addr, min, step)
+            },
         }
     }
 
@@ -61,6 +65,10 @@ impl AddressCondition {
             true  => addr <= max,
             false => addr <  max,
         }
+    }
+
+    fn in_step(addr: Address, min: Address, step: Address) -> bool {
+        (addr - min) % step == 0
     }
 }
 
@@ -230,18 +238,18 @@ mod parse_tests {
             apply_checks:  &[(28, false), (29, true), (30, true), (31, false)],
             desc:          "Line ranges with inclusive/exclusive bounds",
         },
-        // ConditionParseTest { // Test a simple step range condition.
-        //     inputs:        &["[0..2..6)"],
-        //     apply_checks:  &[(0, true), (1, false), (2, true), (3, false),
-        //                      (4, true), (5, false), (6, false)],
-        //     desc:          "Simple step range condition [0..2..6)",
-        // },
-        // ConditionParseTest { // Test a simple step range condition.
-        //     inputs:        &["[0..2..6]"],
-        //     apply_checks:  &[(0, true), (1, false), (2, true), (3, false),
-        //                      (4, true), (5, false), (6, true)],
-        //     desc:          "Simple step range condition [0..2..6)",
-        // },
+        ConditionParseTest { // Test a simple step range condition.
+            inputs:        &["[0..2..6)"],
+            apply_checks:  &[(0, true), (1, false), (2, true), (3, false),
+                             (4, true), (5, false), (6, false)],
+            desc:          "Simple step range condition [0..2..6)",
+        },
+        ConditionParseTest { // Test a simple step range condition.
+            inputs:        &["[0..2..6]"],
+            apply_checks:  &[(0, true), (1, false), (2, true), (3, false),
+                             (4, true), (5, false), (6, true)],
+            desc:          "Simple step range condition [0..2..6)",
+        },
     ];
 
     #[test]
