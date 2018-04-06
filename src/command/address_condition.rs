@@ -98,16 +98,8 @@ impl AddressCondition {
             return Err(AddressConditionParseError::InvalidLineNumber);
         }
 
-        // First, split the min and max tokens into a closure/address tuple.
-        let (min_split_i, max_split_i) = (1, max_token.len() - 1);
-        let (min_closure_s, min_addr_s) = min_token.split_at(min_split_i);
-        let (max_addr_s, max_closure_s) = max_token.split_at(max_split_i);
-
-        // Parse the upper and lower bounds' closures and addresses.
-        let min_inclusive = AddressCondition::is_min_inclusive(min_closure_s)?;
-        let min = AddressCondition::parse_addr(min_addr_s.to_owned())?;
-        let max_inclusive = AddressCondition::is_max_inclusive(max_closure_s)?;
-        let max = AddressCondition::parse_addr(max_addr_s.to_owned())?;
+        let (min, min_inclusive) = AddressCondition::parse_min_token(min_token)?;
+        let (max, max_inclusive) = AddressCondition::parse_max_token(max_token)?;
 
         Ok(AddressCondition { // Return an address condition for the range.
             vals: Values::Range { min, min_inclusive, max, max_inclusive }
@@ -136,6 +128,34 @@ impl AddressCondition {
         return s // FIXUP? Not sure if there is a way to replace multiple chars.
             .replace("[", "").replace("(", "")
             .replace("]", "").replace(")", "");
+    }
+
+    /// This function will split the lower bound token of a range condition
+    /// into an address and a bool representing the inclusivity of that bound.
+    fn parse_min_token(min_token: &String)
+        -> Result<(Address, bool), AddressConditionParseError> {
+        if min_token.len() < 2 {
+            Err(AddressConditionParseError::InvalidArgument)
+        } else {
+            let (closure_s, addr_s) = min_token.split_at(1);
+            let min = AddressCondition::parse_addr(addr_s.to_owned())?;
+            let min_inclusive = AddressCondition::is_min_inclusive(closure_s)?;
+            Ok((min, min_inclusive))
+        }
+    }
+
+    /// This function will split the upper bound token of a range condition
+    /// into an address and a bool representing the inclusivity of that bound.
+    fn parse_max_token(max_token: &String)
+        -> Result<(Address, bool), AddressConditionParseError> {
+        if max_token.len() < 2 {
+            Err(AddressConditionParseError::InvalidArgument)
+        } else {
+            let (closure_s, addr_s) = max_token.split_at(max_token.len() - 1);
+            let max = AddressCondition::parse_addr(addr_s.to_owned())?;
+            let max_inclusive = AddressCondition::is_max_inclusive(closure_s)?;
+            Ok((max, max_inclusive))
+        }
     }
 
     /// Return true/false based on whether the lower bound closure is or is not
@@ -195,7 +215,7 @@ mod parse_tests {
             apply_checks:  &[(0, true), (1, false), (2, true), (3, false),
                              (4, true), (5, false), (6, false)],
             desc:          "Simple step range condition [0..2..6)",
-        }
+        },
     ];
 
     #[test]
