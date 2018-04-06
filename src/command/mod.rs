@@ -22,6 +22,7 @@ pub struct Command {
 }
 
 impl Command {
+    /// Run the command for the given line.
     pub fn run(&self, line: Line) -> Line {
         if !self.should_run(&line) { return line; }
         match self.comm {
@@ -32,6 +33,7 @@ impl Command {
         }
     }
 
+    /// Internal helper, checks if conditions are met to run.
     fn should_run(&self, line: &Line) -> bool {
         match &self.cond {
             &Some(ref c) => c.applies(line.addr),
@@ -40,7 +42,7 @@ impl Command {
     }
 }
 
-// TODO: ...
+// Creates a command object from a vector of strings. (In progress)
 impl From<Vec<String>> for Command {
     fn from(s: Vec<String>) -> Self {
         let comm: CommandType = match s[0].as_ref() {

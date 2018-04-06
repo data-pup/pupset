@@ -36,17 +36,21 @@ pub struct AddressCondition {
 }
 
 impl AddressCondition {
+    /// Return a bool representing if the given address should be edited
+    /// by a command with this condition.
     pub fn applies(&self, addr: Address) -> bool {
         match self.vals {
             Values::LineNumber(n) => addr == n,
             Values::Range { min, min_inclusive, max, max_inclusive } => {
-                let within_lower_bound: bool =
+                let within_lower_bound: bool = // Check if within lower bound.
                     if min_inclusive { min <= addr }
                     else             { min <  addr };
-                if within_lower_bound {
+                if within_lower_bound {        // Check if within upper bound.
                     return if max_inclusive { addr <= max }
                            else             { addr <  max };
-                } else { return false; }
+                } else {
+                    return false;
+                }
             }
             _ => unimplemented!(),
         }
