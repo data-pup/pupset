@@ -1,29 +1,30 @@
-use command::{
-    Address,
-    Command,
-    CommandType::Delete,
-};
+// use command_tests::command::{
+//     Address,
+//     Command,
+//     CommandType,
+//     Line,
+// };
 
-struct DeleteTestCase {
-    input:           Vec<&'static str>,
-    address:         Option<Address>,
-    expected_output: Vec<&'static str>,
-    test_desc:       &'static str,
-}
+// struct DeleteTestCase {
+//     input:           Vec<&'static str>,
+//     address:         Option<Address>,
+//     expected_output: Vec<&'static str>,
+//     test_desc:       &'static str,
+// }
 
-#[test]
-fn it_works() {
-    let comm = Command { comm: Delete };
-}
+// #[test]
+// fn it_works() {
+//     let comm = Command { comm: Delete };
+// }
 
-#[test]
-fn delete_with_no_condition_clears_line() {
-    let comm = Command { comm: Delete };
-    let input = Line { addr: 0, contents: String::from("String to Delete.") };
-    let output = comm.run();
-    let expected = Line { addr: 0, contents: String::from("") };
-    assert_eq!(output, expected);
-}
+// #[test]
+// fn delete_with_no_condition_clears_line() {
+//     let comm = Command { comm: CommandType::Delete, Cond: None };
+//     let input = Line { addr: 0, contents: String::from("String to Delete.") };
+//     let output = comm.run(input);
+//     let expected = Line { addr: 0, contents: String::from("") };
+//     assert_eq!(output, expected);
+// }
 
 // fn create_lines_vec(input: &Vec<&'static str>) -> Vec<Line> {
 //     input.iter()
@@ -57,25 +58,25 @@ fn delete_with_no_condition_clears_line() {
 //     }
 // }
 
-fn init_test_cases() -> Vec<DeleteTestCase> {
-    vec![
-        DeleteTestCase {
-            address:         Some(0),
-            input:           vec!["hello", "world"],
-            expected_output: vec!["",      "world"],
-            test_desc:       "Deleting first line works.",
-        },
-        DeleteTestCase {
-            address:         Some(2),
-            input:           vec!["hello", "world"],
-            expected_output: vec!["hello", "world"],
-            test_desc:       "Address out of bounds deletes nothing.",
-        },
-        DeleteTestCase {
-            address:         None,
-            input:           vec!["hello", "world"],
-            expected_output: vec!["",      ""     ],
-            test_desc:       "No address always applies.",
-        },
-    ]
-}
+// fn init_test_cases() -> Vec<DeleteTestCase> {
+//     vec![
+//         DeleteTestCase {
+//             address:         Some(0),
+//             input:           vec!["hello", "world"],
+//             expected_output: vec!["",      "world"],
+//             test_desc:       "Deleting first line works.",
+//         },
+//         DeleteTestCase {
+//             address:         Some(2),
+//             input:           vec!["hello", "world"],
+//             expected_output: vec!["hello", "world"],
+//             test_desc:       "Address out of bounds deletes nothing.",
+//         },
+//         DeleteTestCase {
+//             address:         None,
+//             input:           vec!["hello", "world"],
+//             expected_output: vec!["",      ""     ],
+//             test_desc:       "No address always applies.",
+//         },
+//     ]
+// }

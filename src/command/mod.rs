@@ -93,4 +93,13 @@ mod command_tests {
             assert_eq!(comm, Command { comm: expected_type, cond: None });
         }
     }
+
+    #[test]
+    fn delete_with_no_condition_clears_line() {
+        let comm = Command { comm: CommandType::Delete, cond: None };
+        let input = Line { addr: 0, contents: String::from("String to Delete.") };
+        let output = comm.run(input);
+        let expected = Line { addr: 0, contents: String::from("") };
+        assert_eq!(output, expected);
+    }
 }
